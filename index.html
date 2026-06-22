@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Compass+ · Planejamento Acadêmico UTFPR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<style>
+:root{
+  --bg:#0F1117; --surface:#1A1F2E; --surface2:#222840; --surface3:#2b3350;
+  --line:#2c3350; --text:#E6E9F2; --muted:#9AA3BD; --muted2:#6c7390;
+  --primary:#4F8EF7; --secondary:#F7B84F; --success:#4FD166; --error:#F74F4F;
+  --rascunho:#F7B84F;
+  --obr:#4F8EF7; --hum:#A64FF7; --estrato:#4FD1C5; --trilha:#F7844F; --elet:#F74F9E; --ext:#4FD166;
+  --radius:14px; --radius-sm:9px; --shadow:0 8px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.mono{font-family:'JetBrains Mono',monospace}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+h1,h2,h3,h4{margin:0;font-weight:700;letter-spacing:-.01em}
+a{color:var(--primary)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#333a59;border-radius:8px}
+::-webkit-scrollbar-track{background:transparent}
+
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:var(--radius-sm);font-weight:600;font-size:13px;transition:.15s;background:var(--surface2);color:var(--text);border:1px solid var(--line)}
+.btn:hover{background:var(--surface3);transform:translateY(-1px)}
+.btn-primary{background:var(--primary);color:#06122b;border-color:transparent}
+.btn-primary:hover{background:#6aa0ff}
+.btn-ghost{background:transparent;border-color:var(--line)}
+.btn-danger{background:transparent;border:1px solid #5a2b34;color:#ff9a9a}
+.btn-danger:hover{background:#3a1a20}
+.btn-sm{padding:6px 11px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:var(--surface3);color:var(--muted)}
+.tag{font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px;letter-spacing:.03em}
+.tag.OBR{background:rgba(79,142,247,.18);color:#9cc0ff}
+.tag.HUM{background:rgba(166,79,247,.18);color:#cfa6ff}
+.tag.OPT{background:rgba(79,209,197,.18);color:#a3eee6}
+.tag.TRI{background:rgba(247,132,79,.18);color:#ffc09a}
+.tag.ELE{background:rgba(247,79,158,.18);color:#ffa6d2}
+.tag.EXT{background:rgba(79,209,102,.16);color:#a9eeb8}
+.tag.turno{background:var(--surface3);color:var(--muted)}
+.muted{color:var(--muted)}
+.hidden{display:none!important}
+
+/* ---------- Welcome / Upload ---------- */
+.welcome{max-width:1000px;margin:0 auto;padding:48px 24px}
+.brand{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.brand .logo{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--primary),#7c5cff);display:grid;place-items:center;font-weight:800;font-size:22px;color:#fff;box-shadow:var(--shadow)}
+.welcome h1{font-size:30px}
+.welcome .sub{color:var(--muted);margin:10px 0 32px;max-width:620px}
+.dropzones{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.dz{background:var(--surface);border:2px dashed var(--line);border-radius:var(--radius);padding:26px 20px;text-align:center;transition:.18s;position:relative;min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.dz:hover{border-color:var(--primary)}
+.dz.drag{border-color:var(--primary);background:#1e2840;transform:scale(1.02)}
+.dz.done{border-style:solid;border-color:var(--success);background:#15251c}
+.dz .ico{font-size:30px}
+.dz h3{font-size:15px}
+.dz p{font-size:12px;color:var(--muted);margin:0}
+.dz .fname{font-size:12px;color:var(--success);font-weight:600;word-break:break-all}
+.dz .bar{height:5px;border-radius:4px;background:var(--surface3);width:100%;overflow:hidden;margin-top:6px}
+.dz .bar > i{display:block;height:100%;background:var(--primary);width:0;transition:width .3s}
+.welcome .actions{margin-top:30px;display:flex;gap:12px;align-items:center}
+.steps{display:flex;gap:8px;margin:34px 0 0;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.step b{width:20px;height:20px;border-radius:50%;background:var(--surface3);display:grid;place-items:center;font-size:11px}
+
+/* ---------- Modal ---------- */
+.overlay{position:fixed;inset:0;background:rgba(5,7,12,.72);backdrop-filter:blur(4px);display:grid;place-items:center;z-index:60;padding:20px}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);max-width:560px;width:100%;padding:26px;box-shadow:var(--shadow)}
+.modal h2{font-size:19px;margin-bottom:6px}
+.modal .q{background:var(--surface2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;margin:16px 0;font-size:14px;line-height:1.6}
+.modal .q b{color:#fff}
+.modal .row{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+.diverg-progress{font-size:12px;color:var(--muted);margin-bottom:4px}
+
+/* ---------- Preferences screen ---------- */
+.pref-screen{max-width:980px;margin:0 auto;padding:40px 24px}
+.pref-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.card h3{font-size:14px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card .hint{font-size:12px;color:var(--muted);margin-top:8px}
+.toggle{position:relative;width:42px;height:24px;border-radius:20px;background:var(--surface3);transition:.2s;flex:none}
+.toggle.on{background:var(--primary)}
+.toggle i{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+.toggle.on i{left:21px}
+.flx{display:flex;align-items:center;gap:10px}
+.spread{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.seg{display:inline-flex;background:var(--surface2);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{padding:7px 14px;font-size:12px;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--primary);color:#06122b}
+.checks{display:flex;gap:10px;flex-wrap:wrap}
+.check{display:flex;align-items:center;gap:7px;padding:8px 13px;border-radius:8px;border:1px solid var(--line);background:var(--surface2);font-weight:600;font-size:13px;cursor:pointer}
+.check.on{border-color:var(--primary);background:rgba(79,142,247,.12);color:#bcd5ff}
+.range-row{display:flex;align-items:center;gap:14px;margin-top:6px}
+input[type=range]{-webkit-appearance:none;height:5px;border-radius:5px;background:var(--surface3);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--primary);cursor:pointer;border:3px solid #0f1117}
+.bignum{font-size:24px;font-weight:800;font-family:'JetBrains Mono'}
+.trilha-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.trilha-list li{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface2);border:1px solid var(--line);border-radius:8px;font-size:13px;cursor:grab}
+.trilha-list li .rank{width:22px;height:22px;border-radius:6px;background:var(--trilha);color:#2a1405;display:grid;place-items:center;font-weight:800;font-size:12px;flex:none}
+.trilha-list li.sortable-ghost{opacity:.4}
+.trilha-list li .grip{margin-left:auto;color:var(--muted2);font-size:16px}
+
+/* block grid in prefs */
+.blockgrid{border-collapse:collapse;width:100%;font-size:11px;user-select:none}
+.blockgrid th,.blockgrid td{border:1px solid var(--line);text-align:center;padding:0}
+.blockgrid th{background:var(--surface2);color:var(--muted);font-weight:600;padding:5px 2px;font-size:10px}
+.blockgrid td.slot{height:22px;cursor:pointer;transition:.1s}
+.blockgrid td.slot:hover{background:var(--surface3)}
+.blockgrid td.slot.blk{background:repeating-linear-gradient(45deg,#3a3550,#3a3550 5px,#2c2840 5px,#2c2840 10px);color:var(--secondary);font-weight:700}
+.blockgrid td.rowlbl{background:var(--surface2);color:var(--muted);font-weight:700;padding:0 6px;font-size:10px}
+.blockgrid tr.sep td{height:4px;background:var(--bg);border:none}
+
+/* ---------- App layout ---------- */
+.topbar{height:60px;display:flex;align-items:center;gap:18px;padding:0 20px;border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:40}
+.topbar .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--primary),#7c5cff);display:grid;place-items:center;font-weight:800;color:#fff}
+.topbar .who{font-weight:700}
+.topbar .meta{display:flex;gap:18px;margin-left:auto;align-items:center}
+.topbar .stat{text-align:right}
+.topbar .stat b{display:block;font-size:15px;font-family:'JetBrains Mono'}
+.topbar .stat span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.layout{display:grid;grid-template-columns:320px 1fr;min-height:calc(100vh - 60px)}
+.sidebar{border-right:1px solid var(--line);background:var(--surface);padding:18px;overflow-y:auto;max-height:calc(100vh - 60px);position:sticky;top:60px}
+.sidebar.collapsed{display:none}
+.side-sec{margin-bottom:22px}
+.side-sec > h4{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.main{padding:20px 24px;overflow-x:hidden}
+
+/* hours table */
+.htable{width:100%;border-collapse:collapse;font-size:12px}
+.htable td{padding:5px 4px;border-bottom:1px solid var(--line)}
+.htable td:nth-child(2),.htable td:nth-child(3){text-align:right;font-family:'JetBrains Mono'}
+.htable tr.done{opacity:.45}
+.htable tr.sub td:first-child{padding-left:16px;color:var(--muted)}
+.htable tr.sub2 td:first-child{padding-left:28px;color:var(--muted);font-size:11px}
+.htable .area{font-weight:600}
+.htable .bar{height:4px;border-radius:3px;background:var(--surface3);overflow:hidden;margin-top:3px}
+.htable .bar>i{display:block;height:100%}
+.q-help{display:inline-grid;place-items:center;width:14px;height:14px;border-radius:50%;background:var(--surface3);color:var(--muted);font-size:9px;cursor:help;margin-left:5px}
+
+/* tabs */
+.tabs{display:flex;gap:7px;overflow-x:auto;padding-bottom:12px;margin-bottom:6px}
+.tab{flex:none;padding:9px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-size:12px;font-weight:600;color:var(--muted);transition:.15s;display:flex;flex-direction:column;gap:2px;min-width:96px}
+.tab .ttl{color:var(--text);font-size:13px}
+.tab .tst{font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+.tab.active{border-color:var(--primary);background:rgba(79,142,247,.1)}
+.tab.confirmado .tst{color:var(--success)}
+.tab.atual .tst{color:var(--secondary)}
+.tab.formatura{border-color:var(--success);background:rgba(79,209,102,.1)}
+
+/* grade cards */
+.sem-head{display:flex;align-items:center;justify-content:space-between;margin:6px 0 16px;flex-wrap:wrap;gap:10px}
+.sem-head h2{font-size:20px}
+.banner{padding:11px 14px;border-radius:10px;font-size:13px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start}
+.banner.warn{background:rgba(247,184,79,.12);border:1px solid #4a3c1c;color:#ffd98a}
+.banner.info{background:rgba(79,142,247,.1);border:1px solid #294063;color:#bcd5ff}
+.banner.ok{background:rgba(79,209,102,.1);border:1px solid #245232;color:#a9eeb8}
+.banner .b-actions{margin-left:auto;display:flex;gap:8px;flex:none}
+.grades{display:flex;flex-direction:column;gap:12px}
+.gcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:.15s}
+.gcard.sel{border-color:var(--primary);box-shadow:0 0 0 1px var(--primary)}
+.gcard.rec{border-color:var(--secondary)}
+.gcard .gh{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer}
+.gcard .gh .score{margin-left:auto;font-family:'JetBrains Mono';font-weight:700;font-size:13px;display:flex;align-items:center;gap:6px}
+.gcard .gh .dot{width:9px;height:9px;border-radius:50%;background:var(--success)}
+.gcard .gtitle{font-size:15px;font-weight:700}
+.gcard .gsub{font-size:11px;color:var(--muted)}
+.gcard .gbody{padding:0 16px 14px;display:none}
+.gcard.open .gbody{display:block}
+.disc-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;font-size:13px;border:1px solid transparent}
+.disc-row:hover{background:var(--surface2)}
+.disc-row .code{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);width:58px;flex:none}
+.disc-row .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.disc-row .ext-dot{width:8px;height:8px;border-radius:50%;background:var(--ext);flex:none}
+.disc-row.rascunho{background:repeating-linear-gradient(45deg,rgba(247,184,79,.08),rgba(247,184,79,.08) 6px,transparent 6px,transparent 12px)}
+.gcard .gactions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+
+/* weekly schedule */
+.cal-wrap{overflow-x:auto;margin-top:8px}
+.cal{border-collapse:collapse;width:100%;min-width:640px;font-size:11px}
+.cal th,.cal td{border:1px solid var(--line);padding:0}
+.cal th{background:var(--surface2);color:var(--muted);font-weight:600;padding:7px 4px;font-size:11px}
+.cal td.tlbl{background:var(--surface2);color:var(--muted);font-weight:700;text-align:center;width:34px;font-family:'JetBrains Mono';font-size:10px}
+.cal td.cell{height:30px;vertical-align:middle;padding:1px}
+.cal tr.sep td{height:5px;background:var(--bg);border:none}
+.ev{height:100%;border-radius:5px;padding:2px 5px;font-size:10px;line-height:1.15;overflow:hidden;color:#06122b;font-weight:600;position:relative;cursor:default}
+.ev .c{font-family:'JetBrains Mono';font-size:9px;opacity:.85}
+.ev.OBR{background:var(--obr)} .ev.HUM{background:var(--hum);color:#fff} .ev.OPT{background:var(--estrato)}
+.ev.TRI{background:var(--trilha)} .ev.ELE{background:var(--elet);color:#fff}
+.ev.andamento{background:#39507a;color:#cfe0ff;border:1px dashed #6f92cf}
+.ev.ext{box-shadow:inset 0 0 0 2px var(--ext)}
+.ev.blk{background:repeating-linear-gradient(45deg,#3a3550,#3a3550 5px,#2c2840 5px,#2c2840 10px);color:var(--secondary);border:1px solid #4a3c1c}
+.ev.rascunho{background:repeating-linear-gradient(45deg,#5a4a22,#5a4a22 6px,#46391a 6px,#46391a 12px);color:#ffd98a;border:1px solid var(--secondary)}
+.ev .warn{position:absolute;top:1px;right:2px;font-size:9px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+/* personalization */
+.personalize{margin-top:20px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.personalize > summary{padding:14px 16px;font-weight:700;cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+.personalize > summary::-webkit-details-marker{display:none}
+.plist{padding:0 16px 16px;display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.pitem{display:flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface2);font-size:12px;cursor:pointer;transition:.12s}
+.pitem:hover{border-color:var(--primary)}
+.pitem.on{border-color:var(--primary);background:rgba(79,142,247,.12)}
+.pitem.dis{opacity:.4;cursor:not-allowed;text-decoration:line-through}
+.pitem .code{font-family:'JetBrains Mono';font-size:11px;color:var(--muted)}
+.pitem .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* tooltip */
+.tip{position:fixed;z-index:80;background:#0a0d14;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:11px;max-width:260px;box-shadow:var(--shadow);pointer-events:none;line-height:1.5}
+.tip b{color:#fff}
+.tip .ok{color:var(--success)} .tip .no{color:var(--error)}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--surface3);border:1px solid var(--line);padding:11px 18px;border-radius:10px;font-size:13px;z-index:90;box-shadow:var(--shadow);animation:slideup .3s}
+@keyframes slideup{from{opacity:0;transform:transl(-50%,12px)}to{opacity:1}}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.gcard,.banner{animation:fadein .25s}
+.cal .ev{animation:fadein .3s}
+
+@media(max-width:1024px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:0;top:60px;bottom:0;width:320px;z-index:35;box-shadow:var(--shadow)}
+  .sidebar.collapsed{display:none}
+  .pref-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .dropzones{grid-template-columns:1fr}
+  .plist{grid-template-columns:1fr}
+  .topbar .meta{gap:10px}
+}
+.badge-grad{font-size:42px;text-align:center;margin:10px}
+.formatura-card{background:linear-gradient(135deg,rgba(79,209,102,.14),rgba(79,142,247,.1));border:1px solid #245232;border-radius:var(--radius);padding:30px;text-align:center}
+.formatura-card h2{font-size:26px;margin-bottom:8px}
+.req-list{list-style:none;padding:0;margin:16px auto;max-width:420px;text-align:left;display:flex;flex-direction:column;gap:6px}
+.req-list li{display:flex;align-items:center;gap:10px;font-size:13px;padding:7px 12px;background:var(--surface);border-radius:8px;border:1px solid var(--line)}
+.req-list li .mk{font-size:15px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+/* ===== Compass+ core (validado) ===== */
+/* ===================================================================
+   Compass+ — Núcleo de parsing e planejamento (testável em Node)
+   Este mesmo código é embutido inline no index.html.
+   =================================================================== */
+(function (root) {
+'use strict';
+
+/* ---------- Constantes do curso ---------- */
+const TRILHA_SUBAREAS = {
+  '1162': 'Gestão de Sistemas de Informação',
+  '1163': 'Interação Humano-Computador',
+  '1164': 'Desenvolvimento Baseado em Plataformas',
+  '1165': 'Banco de Dados',
+  '1166': 'Inteligência Artificial',
+  '1167': 'Processamento Gráfico',
+  '1168': 'Algoritmos e Complexidade',
+  '1169': 'Engenharia de Software',
+  '1170': 'Redes de Computadores',
+  '1171': 'Sistemas Embarcados e Robótica',
+  '1172': 'Linguagens de Programação',
+  '1173': 'Otimização, Mod. Analíticos e Simulação',
+};
+const CONJUNTOS = {
+  '1159': { nome: 'Segundo Estrato', pIni: 3, pFim: 6, ch: 360 },
+  '1161': { nome: 'Optativas do Ciclo de Humanidades', pIni: 3, pFim: 6, ch: 135 },
+  '1160': { nome: 'Terceiro Estrato — Trilhas em Computação', pIni: 4, pFim: 8, ch: 345 },
+};
+const REQUISITOS = {
+  obrigatorias: 2005,
+  optativas: 840,
+  conj1159: 360,
+  conj1161: 135,
+  trilhas1160: 345,
+  trilhaMin: 90,        // mínimo p/ validar uma subárea
+  trilhasNecessarias: 3,
+  eletivas: 105,
+  extensao: 330,
+  extensaoEmObrig: 60,  // ICSX20
+  complementares: 90,
+};
+// Apêndice A — horários
+const SLOTS = {
+  M: { 1:['07h30','08h20'],2:['08h20','09h10'],3:['09h10','10h00'],4:['10h20','11h10'],5:['11h10','12h00'],6:['12h00','12h50'] },
+  T: { 1:['13h10','14h00'],2:['14h00','14h50'],3:['14h50','15h40'],4:['16h00','16h50'],5:['16h50','17h40'],6:['17h40','18h30'] },
+  N: { 1:['18h50','19h35'],2:['19h35','20h20'],3:['20h20','21h05'],4:['21h05','21h50'],5:['21h50','22h30'] },
+};
+const DIAS = { 2:'Segunda',3:'Terça',4:'Quarta',5:'Quinta',6:'Sexta',7:'Sábado' };
+
+/* ---------- Utilidades ---------- */
+function norm(s) {
+  return (s || '').toString().normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .toUpperCase().replace(/[^A-Z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function dice(a, b) {                       // similaridade de bigramas (0..1)
+  a = norm(a); b = norm(b);
+  if (a === b) return 1;
+  if (a.length < 2 || b.length < 2) return 0;
+  const bg = s => { const m = new Map(); for (let i=0;i<s.length-1;i++){const g=s.slice(i,i+2); m.set(g,(m.get(g)||0)+1);} return m; };
+  const A = bg(a), B = bg(b); let inter = 0, total = 0;
+  A.forEach((c,g)=>{ total+=c; if (B.has(g)) inter += Math.min(c,B.get(g)); });
+  B.forEach(c=> total+=c);
+  return (2*inter)/total;
+}
+const reCodigo = /^[A-Z]{2,5}[0-9][0-9A-Z]{0,2}$/;   // ICSD20, MAT7C1, ICSHX0, ELEW40...
+function isCodigo(t){ return reCodigo.test(t) && /[0-9]/.test(t) && t.length>=5 && t.length<=6; }
+
+/* ===================================================================
+   Reconstrução geométrica de linhas (idêntica no browser via PDF.js)
+   pages: [{ h, items:[{str,x,yTop,w,h}] }]   (yTop cresce p/ baixo)
+   -> retorna [ [ {t,x} ... ]  (linha)  ... ] achatado de todas as páginas
+   =================================================================== */
+function reconstruirLinhas(pages, xMax) {
+  const linhas = [];
+  for (const pg of pages) {
+    const its = pg.items.filter(it => it.str && it.str.trim() !== '' && (xMax == null || it.x < xMax));
+    const bandas = [];
+    for (const it of its) {
+      const ymid = it.yTop + (it.h || 0) / 2;
+      let b = bandas.find(x => Math.abs(x.y - ymid) <= 3.2);
+      if (!b) { b = { y: ymid, toks: [] }; bandas.push(b); }
+      b.toks.push({ t: it.str, x: it.x });
+    }
+    bandas.sort((a, b) => a.y - b.y);
+    for (const b of bandas) { b.toks.sort((p, q) => p.x - q.x); linhas.push(b.toks); }
+  }
+  return linhas;
+}
+
+/* ===================================================================
+   PARSER 1 — Matriz Curricular
+   =================================================================== */
+function parseMatriz(pages) {
+  const linhas = reconstruirLinhas(pages);
+  const disciplinas = [];
+  const isHeader = toks => toks[0] && /^(Período|PER|\[OPT\])$/.test(toks[0].t);
+
+  for (let i = 0; i < linhas.length; i++) {
+    const toks = linhas[i];
+    if (!toks.length || isHeader(toks)) continue;
+    if (!/^[1-8]$/.test(toks[0].t)) continue;
+
+    // conjunto + código
+    let conjuntoRaw = null, codeIdx = 1;
+    if (toks[1] && /^\[(\d{4})\]$/.test(toks[1].t)) { conjuntoRaw = toks[1].t.slice(1,5); codeIdx = 2; }
+    if (!toks[codeIdx] || !isCodigo(toks[codeIdx].t)) continue;
+    const codigo = toks[codeIdx].t;
+
+    // localizar a corrida de 9 inteiros (CH) — pulando pré-reqs / lixo à direita
+    const arr = toks.map(t => t.t);
+    let j = arr.length - 1;
+    const prereqLinha = [];
+    while (j > codeIdx && !/^\d+$/.test(arr[j])) { if (isCodigo(arr[j])) prereqLinha.push(arr[j]); j--; }
+    const nums = [];
+    while (j > codeIdx && /^\d+$/.test(arr[j])) { nums.unshift(parseInt(arr[j], 10)); j--; }
+    if (nums.length < 9) continue;                          // não é linha de disciplina
+    const ch = nums.slice(nums.length - 9);                 // 9 campos de CH
+    const runStart = j + 1 + (nums.length - 9);
+    const modeloX = toks[runStart - 1] ? toks[runStart - 1].x : 1e9;
+    const nameFirstIdx = codeIdx + 1;
+    const nameStartX = toks[nameFirstIdx] ? toks[nameFirstIdx].x : modeloX;
+    const codeX = toks[codeIdx].x;
+    const midName = (codeX + nameStartX) / 2;
+    const midMod  = (nameStartX + modeloX) / 2;
+
+    // linha-início: separa nome × modelo pela coluna (x), não pela posição
+    const nomeToks = [], modeloToks = [];
+    for (let k = nameFirstIdx; k < runStart; k++) {
+      const tk = toks[k];
+      if (tk.x < midMod) nomeToks.push(tk.t); else modeloToks.push(tk.t);
+    }
+
+    // continuação nas linhas seguintes (nome/modelo por coluna; pára no rodapé/próxima disc.)
+    const prereqs = prereqLinha.slice();
+    const footerRe = /^(CÂMPUS|MATRIZ|STATUS|CURSO|CHT|SOMA|TEMA|TIPO|Legenda|Optativas|Detalhes|Eletiva|Período|Pré|\*)/i;
+    let contLines = 0;
+    for (let n = i + 1; n < linhas.length && contLines < 6; n++) {
+      const ln = linhas[n];
+      if (!ln.length) continue;
+      if (isHeader(ln)) break;
+      if (footerRe.test(ln.map(t=>t.t).join(' '))) break;
+      if (/^[1-8]$/.test(ln[0].t)) {                        // possível próxima disciplina
+        const hasRun = ln.map(t=>t.t).filter(s=>/^\d+$/.test(s)).length >= 9;
+        const c = (ln[1] && /^\[(\d{4})\]$/.test(ln[1].t)) ? 2 : 1;
+        if (hasRun && ln[c] && isCodigo(ln[c].t)) break;
+      }
+      contLines++;
+      for (const tk of ln) {
+        if (isCodigo(tk.t)) { if (tk.x > midMod) prereqs.push(tk.t); continue; }
+        if (tk.t === 'Turmas' || tk.t === 'horas') continue;
+        if (tk.x >= midName && tk.x < midMod) nomeToks.push(tk.t);      // inclui dígitos do nome
+        else if (tk.x >= midMod && !/^\d+$/.test(tk.t)) modeloToks.push(tk.t);
+      }
+    }
+
+    const modelo = modeloToks.join(' ');
+    let conjuntoOptativo = null, subAreaTrilha = null;
+    if (conjuntoRaw) {
+      if (TRILHA_SUBAREAS[conjuntoRaw]) { conjuntoOptativo = '1160'; subAreaTrilha = conjuntoRaw; }
+      else if (conjuntoRaw === '1159' || conjuntoRaw === '1161') conjuntoOptativo = conjuntoRaw;
+      else conjuntoOptativo = conjuntoRaw;
+    }
+    if (disciplinas.some(d => d.codigo === codigo)) continue;   // evita duplicatas
+    disciplinas.push({
+      codigo,
+      nome: tituloCase(nomeToks.join(' ')),
+      periodoSugerido: parseInt(toks[0].t, 10),
+      chTotal: ch[8],
+      chSemanal: ch[2],
+      chExt: ch[6],
+      modeloDisciplina: modelo,
+      preRequisitos: [...new Set(prereqs)],
+      conjuntoOptativo,
+      subAreaTrilha,
+      isOpcional: conjuntoOptativo != null,
+    });
+  }
+
+  const conjuntosOptativos = [];
+  for (const id of Object.keys(CONJUNTOS)) {
+    const c = CONJUNTOS[id];
+    conjuntosOptativos.push({
+      id, nome: c.nome, periodoInicial: c.pIni, periodoFinal: c.pFim, chObrigatoria: c.ch,
+      disciplinas: disciplinas.filter(d => (id==='1160' ? d.conjuntoOptativo==='1160' : d.conjuntoOptativo===id)).map(d=>d.codigo),
+    });
+  }
+  return {
+    disciplinas,
+    resumo: {
+      chObrigatoriaTotal: REQUISITOS.obrigatorias,
+      chOptativasTotal: REQUISITOS.optativas,
+      chExtensaoTotal: REQUISITOS.extensao,
+      chEletivaTotal: REQUISITOS.eletivas,
+      conjuntosOptativos,
+    },
+    subareas: TRILHA_SUBAREAS,
+  };
+}
+function tituloCase(s){
+  return (s||'').toLowerCase().replace(/\b([a-zà-ú0-9])([a-zà-ú0-9]*)/g,(m,a,b)=>a.toUpperCase()+b)
+    .replace(/\b(De|Da|Do|Das|Dos|E|A|Ao|Em|Para|À)\b/g, w=>w.toLowerCase())
+    .replace(/^./, c=>c.toUpperCase());
+}
+
+/* ===================================================================
+   PARSER 2 — Histórico Escolar
+   =================================================================== */
+const SIT_PRIO = { APROVADO:5, CREDITO_CONSIGNADO:5, CURSANDO:3, REPROVADO:2, CANCELADO:1 };
+function parseHistorico(pages) {
+  const linhas = reconstruirLinhas(pages);
+  const texto = linhas.map(l => l.map(t=>t.t).join(' '));
+
+  const head = texto.slice(0, 25).join('\n');
+  const get = re => { const m = head.match(re); return m ? m[1].trim() : ''; };
+  const aluno = {
+    matricula: get(/Aluno:\s*(\d+)/),
+    nome: tituloCase(get(/Aluno:\s*\d+\s*-\s*([^\n]+)/).split(/\s+Identidade/i)[0]),
+    curso: get(/Curso:\s*([^\n]+)/),
+    periodoAtual: parseInt(get(/Período:\s*(\d+)/) || '1', 10),
+    matriz: get(/Matriz:\s*([^\n]+)/),
+    coeficienteAbsoluto: parseFloat((get(/Coeficiente absoluto:\s*([\d,]+)/)||'0').replace(',', '.')),
+    coeficienteNormalizado: parseFloat((get(/Coeficiente normalizado:\s*([\d,]+)/)||'0').replace(',', '.')),
+  };
+
+  // Linhas-âncora: dígito período + código + contém ano 20xx
+  const anchors = [];
+  for (let i = 0; i < linhas.length; i++) {
+    const toks = linhas[i];
+    if (toks.length < 4) continue;
+    if (!/^[1-8]$/.test(toks[0].t)) continue;
+    if (!isCodigo(toks[1].t)) continue;
+    if (!toks.some(t => /^20\d\d$/.test(t.t))) continue;
+    anchors.push(i);
+  }
+  const registros = new Map();
+  const setReg = (cod, sit, extra) => {
+    const prev = registros.get(cod);
+    if (!prev || (SIT_PRIO[sit]||0) >= (SIT_PRIO[prev.situacao]||0))
+      registros.set(cod, Object.assign({ codigo: cod, situacao: sit }, prev, extra, { situacao: sit }));
+  };
+  for (let a = 0; a < anchors.length; a++) {
+    const Li = anchors[a];
+    const toks = linhas[Li];
+    const codigo = toks[1].t;
+    const arr = toks.map(t => t.t);
+    const yi = arr.findIndex(t => /^20\d\d$/.test(t));
+    const ano = parseInt(arr[yi], 10);
+    const semestre = parseInt(arr[yi-1], 10) || null;
+    // janela do registro: da âncora anterior+1 até esta âncora
+    const ini = a === 0 ? 0 : anchors[a-1] + 1;
+    let blob = '';
+    for (let k = ini; k <= Li; k++) blob += ' ' + texto[k];
+    blob = norm(blob);
+    let sit = 'APROVADO';
+    if (/CANCELADO/.test(blob)) sit = 'CANCELADO';
+    else if (/REPROVADO/.test(blob)) sit = 'REPROVADO';
+    else if (/APROVADO/.test(blob)) sit = 'APROVADO';
+    else if (/CONSIGNADO/.test(blob)) sit = 'CREDITO_CONSIGNADO';
+    setReg(codigo, sit, { ano, semestre });
+  }
+
+  // Matriculadas 2026/1 (CURSANDO)
+  const matIdx = texto.findIndex(t => /Matriculadas/.test(t));
+  if (matIdx >= 0) {
+    for (let k = matIdx + 1; k < linhas.length; k++) {
+      const toks = linhas[k];
+      const arr = toks.map(t=>t.t);
+      if (arr.join(' ').match(/Exame De Curso|ENADE|Vínculos|Bloqueios/i)) break;
+      if (toks.length && isCodigo(toks[0].t) && arr.some(t=>/Cursando/i.test(t))) {
+        const turma = (arr.find(t=>/^[A-Z]\d{2}$/.test(t))||'');
+        setReg(toks[0].t, 'CURSANDO', { turma });
+      }
+    }
+  }
+
+  // ENADE
+  const full = texto.join('\n');
+  const enadeConcluinte = /CONCLUINTE[\s\S]{0,40}Sem Registro/i.test(full) ? false : /CONCLUINTE[\s\S]{0,80}(Aprovado|Dispensado|Realiz)/i.test(full);
+
+  const cursadas = [...registros.values()];
+  const cursadasAprovadas = cursadas.filter(d => d.situacao==='APROVADO'||d.situacao==='CREDITO_CONSIGNADO').map(d=>d.codigo);
+  const emAndamento = cursadas.filter(d => d.situacao==='CURSANDO').map(d=>d.codigo);
+
+  return { aluno, cursadas, cursadasAprovadas, emAndamento, enadeConcluinte };
+}
+
+/* ===================================================================
+   PARSER 3 — Grade na Hora
+   =================================================================== */
+function parseGNH(pages) {
+  const linhas = reconstruirLinhas(pages, 460);   // descarta a minigrade lateral
+  let texto = linhas.map(l => l.map(t=>t.t).join(' ')).join(' ');
+  texto = texto.replace(/\s+/g, ' ')
+               .replace(/\(([^()]*)\)/g, (m, inner) => '(' + inner.replace(/\s+/g, '') + ')');
+
+  const turmas = [];
+  const headerRe = /\[([A-Z0-9]{3,6})\]/g;
+  const heads = [];
+  let m; while ((m = headerRe.exec(texto))) heads.push({ cod: m[1], start: m.index, end: headerRe.lastIndex });
+  for (let h = 0; h < heads.length; h++) {
+    const cod = heads[h].cod;
+    const block = texto.slice(heads[h].end, h+1 < heads.length ? heads[h+1].start : texto.length);
+    const aulasM = block.match(/\((\d+)\s*aulas\/sem\)/);
+    const aulas = aulasM ? parseInt(aulasM[1],10) : null;
+    const nome = tituloCase((aulasM ? block.slice(0, aulasM.index) : block.split(/[SNTEM]\d{2}\s/)[0]).replace(/\s+/g,' ').trim());
+
+    const turmaRe = /([SNTEM]\d{2})\s*(?:—|–|-)?\s*([^[\]]*?)\[\s*([^\]]*?)\s*\]/g;
+    let tm;
+    while ((tm = turmaRe.exec(block))) {
+      const turma = tm[1];
+      const prof = tituloCase((tm[2]||'').replace(/\s+/g,' ').trim());
+      const sched = tm[3];
+      const horarios = []; const seen = new Set(); let campus = 'CURITIBA';
+      const slotRe = /(\d)([MTN])(\d)\((\*{0,2})([A-Za-z0-9-]+)\)/g; let sm;
+      while ((sm = slotRe.exec(sched))) {
+        const dia = parseInt(sm[1],10), per = sm[2], slot = parseInt(sm[3],10);
+        const ast = sm[4], sala = sm[5];
+        const camp = ast==='**' ? 'NEOVILLE' : ast==='*' ? 'ECOVILLE' : 'CURITIBA';
+        if (ast) campus = camp;
+        const key = dia+per+slot;
+        if (seen.has(key)) continue; seen.add(key);
+        horarios.push({ diaSemana: dia, periodo: per, slot, sala });
+      }
+      if (turmas.some(t => t.codigo===cod && t.turma===turma)) continue;
+      turmas.push({ codigo: cod, nome, turma, professor: prof, aulasSem: aulas, horarios, campus });
+    }
+  }
+  return turmas;
+}
+
+/* ===================================================================
+   Equivalências GNH↔Matriz + divergências
+   =================================================================== */
+function detectarEquivalencias(matriz, gnh) {
+  const mCods = new Set(matriz.disciplinas.map(d => d.codigo));
+  const auto = {}; const divergencias = [];
+  const gnhCods = [...new Set(gnh.map(t => t.codigo))];
+  for (const gc of gnhCods) {
+    if (mCods.has(gc)) continue;
+    if (mCods.has('I' + gc)) { auto[gc] = 'I' + gc; continue; }   // CSX41 -> ICSX41
+    const nome = (gnh.find(t => t.codigo === gc) || {}).nome || '';
+    let best = null, bestS = 0;
+    for (const d of matriz.disciplinas) {
+      const s = dice(nome, d.nome);
+      if (s > bestS) { bestS = s; best = d; }
+    }
+    if (best && bestS >= 0.9) divergencias.push({ gnhCod: gc, gnhNome: nome, matrizCod: best.codigo, matrizNome: best.nome, score: bestS });
+  }
+  return { auto, divergencias };
+}
+
+/* ===================================================================
+   Grafo de dependências + Motor de planejamento
+   =================================================================== */
+function construirGrafo(disciplinas) {
+  const grafo = new Map();
+  const byCod = new Map(disciplinas.map(d => [d.codigo, d]));
+  for (const d of disciplinas) if (!grafo.has(d.codigo)) grafo.set(d.codigo, { in: new Set(), out: new Set() });
+  for (const d of disciplinas)
+    for (const p of d.preRequisitos)
+      if (byCod.has(p)) { grafo.get(d.codigo).in.add(p); grafo.get(p).out.add(d.codigo); }
+  return grafo;
+}
+function getDisponiveis(grafo, cursadas) {
+  const out = [];
+  grafo.forEach((v, cod) => { let ok = true; v.in.forEach(p => { if (!cursadas.has(p)) ok = false; }); if (ok && !cursadas.has(cod)) out.push(cod); });
+  return out;
+}
+function getDesbloqueaveis(grafo, codigo, cursadas) {
+  const v = grafo.get(codigo); if (!v) return [];
+  const futuras = new Set([...cursadas, codigo]);
+  const out = [];
+  v.out.forEach(nx => { const w = grafo.get(nx); let ok = true; w.in.forEach(p => { if (!futuras.has(p)) ok = false; }); if (ok && !cursadas.has(nx)) out.push(nx); });
+  return out;
+}
+
+function conflita(hA, hB) {
+  for (const a of hA) for (const b of hB) if (a.diaSemana===b.diaSemana && a.periodo===b.periodo && a.slot===b.slot) return true;
+  return false;
+}
+function bloqueado(horarios, bloqueios) {
+  for (const h of horarios) for (const b of bloqueios) if (h.diaSemana===b.diaSemana && h.periodo===b.periodo && h.slot===b.slot) return true;
+  return false;
+}
+
+/* Candidatas (disciplina + turmas viáveis) para um semestre */
+function candidatasSemestre(ctx, cursadas, emAndamento, usarGNH) {
+  const { matrizByCod, grafo, gnhByCod, equiv, pref } = ctx;
+  const disp = new Set(getDisponiveis(grafo, cursadas));
+  const cand = [];
+  disp.forEach(cod => {
+    if (emAndamento.has(cod)) return;
+    const d = matrizByCod.get(cod); if (!d) return;
+    if (/^(ENADE|ESTÁGIO)/.test(d.modeloDisciplina) && d.chSemanal===0) { /* estágio sem aula */ }
+    let turmasViaveis = (gnhByCod.get(cod) || []);
+    if (usarGNH) {
+      turmasViaveis = turmasViaveis.filter(t => {
+        if (pref.campusUnico && t.campus !== pref.campus) return false;
+        if (t.horarios.length && !t.horarios.every(h => pref.turnos.includes(h.periodo))) return false;
+        return true;
+      });
+      if (!turmasViaveis.length) return;     // exige oferta real
+    } else {
+      if (!turmasViaveis.length) turmasViaveis = [{ codigo: cod, turma: '—', professor: '', horarios: [], campus: 'CURITIBA', estimada: true }];
+    }
+    cand.push({ disciplina: d, turmas: turmasViaveis });
+  });
+  return cand;
+}
+
+/* Prioridade (3.4.1) */
+function prioridade(ctx, cand, cursadas, faltantesObrig) {
+  const { grafo, pref } = ctx;
+  return cand.map(c => {
+    const d = c.disciplina;
+    const fanout = getDesbloqueaveis(grafo, d.codigo, cursadas).length;
+    const obrig = !d.isOpcional;
+    const isFaltObrig = obrig && faltantesObrig.has(d.codigo);
+    const trilhaRank = (d.subAreaTrilha && pref.preferenciaTrilhas.indexOf(d.subAreaTrilha) >= 0)
+      ? (pref.preferenciaTrilhas.length - pref.preferenciaTrilhas.indexOf(d.subAreaTrilha)) : 0;
+    const atraso = obrig ? (50 - d.periodoSugerido) : 0;
+    const key = (isFaltObrig?100000:0) + (obrig?10000:0) + atraso*100 + fanout*30 + trilhaRank*5;
+    return Object.assign({}, c, { fanout, obrig, isFaltObrig, trilhaRank, _key: key });
+  }).sort((a, b) => b._key - a._key);
+}
+
+/* Geração de grades por backtracking com prazo (3.4.2-4) */
+function gerarGrades(ctx, candOrdenadas, pref, bloqueios, usarGNH, deadline) {
+  const min = pref.cargaMin, max = pref.cargaMax;
+  const pool = candOrdenadas.slice(0, 14);             // limita explosão
+  const grades = []; let nodes = 0;
+
+  function score(sel) {
+    let nObr=0, fan=0, nTri=0, nBlk=0;
+    for (const s of sel) { if (s.obrig) nObr++; fan += s.fanout; if (s.trilhaRank>0) nTri++; if (s.bloqueado) nBlk++; }
+    return 100*nObr + 8*fan + 12*nTri - 40*nBlk - 6*sel.length;
+  }
+  function rec(idx, sel, ocup) {
+    if (Date.now() > deadline) return;
+    nodes++;
+    if (sel.length >= min) {
+      grades.push({ sel: sel.map(s => ({...s})), score: score(sel) });
+    }
+    if (sel.length >= max) return;
+    for (let i = idx; i < pool.length; i++) {
+      const c = pool[i];
+      // escolher melhor turma viável (sem conflito; bloqueio vira rascunho)
+      let chosen = null;
+      for (const t of c.turmas) {
+        if (usarGNH && t.horarios.length && conflita(t.horarios, ocup)) continue;
+        const blk = bloqueado(t.horarios, bloqueios);
+        if (!chosen || (chosen.bloqueado && !blk)) chosen = { ...c, turma: t, bloqueado: blk, horarios: t.horarios };
+        if (!blk) break;
+      }
+      if (!chosen) continue;
+      const novoOcup = ocup.concat(chosen.horarios);
+      rec(i + 1, sel.concat(chosen), novoOcup);
+      if (Date.now() > deadline) return;
+    }
+  }
+  rec(0, [], []);
+
+  // dedup por conjunto de códigos, top-5 por score
+  const vistos = new Set(); const unicas = [];
+  grades.sort((a, b) => b.score - a.score);
+  for (const g of grades) {
+    const key = g.sel.map(s => s.disciplina.codigo).sort().join(',');
+    if (vistos.has(key)) continue; vistos.add(key); unicas.push(g);
+    if (unicas.length >= 5) break;
+  }
+  return { grades: unicas, nodes, estourou: Date.now() > deadline };
+}
+
+/* ===================================================================
+   Cálculo de horas faltantes (validado contra histórico oficial)
+   =================================================================== */
+function calcularHoras(matriz, cursadasSet, extras) {
+  const byCod = new Map(matriz.disciplinas.map(d => [d.codigo, d]));
+  const aprov = d => cursadasSet.has(d.codigo);
+  let obrCursada = 0;
+  matriz.disciplinas.filter(d => !d.isOpcional).forEach(d => { if (aprov(d)) obrCursada += d.chTotal; });
+
+  const porConjunto = {};
+  const addConj = (id, ch) => { porConjunto[id] = porConjunto[id] || { cursada: 0 }; porConjunto[id].cursada += ch; };
+  matriz.disciplinas.filter(d => d.isOpcional).forEach(d => {
+    if (!aprov(d)) return;
+    if (d.conjuntoOptativo === '1160' && d.subAreaTrilha) addConj(d.subAreaTrilha, d.chTotal);
+    else addConj(d.conjuntoOptativo, d.chTotal);
+  });
+  const c1159 = porConjunto['1159']?.cursada || 0;
+  const c1161 = porConjunto['1161']?.cursada || 0;
+  // trilhas: validação parcial (3 subáreas) — soma simples de CH cursada em subáreas
+  let trilhaCursada = 0; const subStatus = {};
+  Object.keys(TRILHA_SUBAREAS).forEach(id => {
+    const ch = porConjunto[id]?.cursada || 0; trilhaCursada += ch;
+    subStatus[id] = { nome: TRILHA_SUBAREAS[id], cursada: ch, validada: ch >= REQUISITOS.trilhaMin, faltante: Math.max(0, REQUISITOS.trilhaMin - ch) };
+  });
+  const validadas = Object.values(subStatus).filter(s => s.validada).length;
+
+  // extensão: ICSX20(60 obrig) + optativas aprovadas com chExt
+  let extCursada = 0;
+  matriz.disciplinas.forEach(d => { if (aprov(d) && d.chExt > 0) extCursada += d.chExt; });
+
+  const eletivaCursada = (extras && extras.eletivaManual) || 0;
+
+  const linha = (req, cur) => ({ total: req, cursada: cur, faltante: Math.max(0, req - cur), ok: cur >= req });
+  return {
+    obrigatorias: linha(REQUISITOS.obrigatorias, obrCursada),
+    optativasTotal: linha(REQUISITOS.optativas, c1159 + c1161 + trilhaCursada),
+    conj1159: linha(REQUISITOS.conj1159, c1159),
+    conj1161: linha(REQUISITOS.conj1161, c1161),
+    trilhas: { total: REQUISITOS.trilhas1160, cursada: trilhaCursada,
+      faltante: validadas >= REQUISITOS.trilhasNecessarias ? Math.max(0, REQUISITOS.trilhas1160 - trilhaCursada) : Math.max(0, REQUISITOS.trilhas1160 - trilhaCursada),
+      validadas, ok: validadas >= REQUISITOS.trilhasNecessarias && trilhaCursada >= REQUISITOS.trilhas1160 },
+    subStatus,
+    eletivas: linha(REQUISITOS.eletivas, eletivaCursada),
+    extensao: linha(REQUISITOS.extensao, extCursada),
+    complementares: linha(REQUISITOS.complementares, cursadasSet.has('ICSX50') ? REQUISITOS.complementares : 0),
+  };
+}
+
+/* ---------- exports ---------- */
+const API = { norm, dice, reconstruirLinhas, parseMatriz, parseHistorico, parseGNH,
+  detectarEquivalencias, construirGrafo, getDisponiveis, getDesbloqueaveis,
+  candidatasSemestre, prioridade, gerarGrades, calcularHoras, conflita, bloqueado,
+  TRILHA_SUBAREAS, CONJUNTOS, REQUISITOS, SLOTS, DIAS, tituloCase };
+if (typeof module !== 'undefined' && module.exports) module.exports = API;
+root.Compass = API;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+/* ===== Compass+ UI ===== */
+/* ===================================================================
+   Compass+ — Interface (depende de window.Compass)
+   =================================================================== */
+const K = window.Compass;
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const root = $('#root');
+const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- Extração via PDF.js (espelha o dump de teste) ---------- */
+async function extrairPaginas(file, onProg){
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  const pages = [];
+  for (let p = 1; p <= pdf.numPages; p++){
+    const page = await pdf.getPage(p);
+    const vp = page.getViewport({ scale: 1 });
+    const tc = await page.getTextContent();
+    const items = [];
+    for (const it of tc.items){
+      const str = it.str; if (!str || !str.trim()) continue;
+      const x = it.transform[4], f = it.transform[5];
+      const h = it.height || 9, w = it.width || str.length*5;
+      const yTop = vp.height - f;
+      const words = str.trim().split(/\s+/);
+      if (words.length <= 1){ items.push({ str: str.trim(), x, yTop, w, h }); }
+      else {
+        const total = str.length; let ci = 0;
+        for (const wd of words){ const idx = str.indexOf(wd, ci); const off = idx<0?ci:idx; items.push({ str: wd, x: x + (off/total)*w, yTop, w: (wd.length/total)*w, h }); ci = off + wd.length; }
+      }
+    }
+    pages.push({ h: vp.height, items });
+    if (onProg) onProg(p/pdf.numPages);
+  }
+  return pages;
+}
+
+/* ---------- Estado ---------- */
+const DEFAULT_PREF = { campusUnico:false, campus:'CURITIBA', turnos:['M','T','N'], cargaMin:4, cargaMax:7, preferenciaTrilhas:[], eletivaManual:0 };
+let S = null;          // estado persistido
+let D = {};            // derivado (não persistido)
+
+function novoEstado(){
+  return { fase:'upload', files:{matriz:null,historico:null,gnh:null}, parsed:{matriz:null,historico:null,gnh:null},
+    equivalencias:{}, divergPendentes:[], preferencias:structuredClone(DEFAULT_PREF), bloqueios:{},
+    escolhas:{}, custom:{}, manuais:{ estagios:{}, eletiva:{h:0,sem:null}, extensao:{h:0,sem:null}, enade:{done:false,sem:null} },
+    abaAtiva:0, sidebarCollapsed:false };
+}
+function salvar(){ try{ const c = structuredClone(S); delete c.files; localStorage.setItem('compass_state', JSON.stringify(c)); }catch(e){console.warn(e);} }
+function carregar(){ try{ const r = localStorage.getItem('compass_state'); if(!r) return null; const o = JSON.parse(r); o.files={matriz:null,historico:null,gnh:null}; if(Array.isArray(o.bloqueios)) o.bloqueios={}; return o; }catch(e){ return null; } }
+function blocosDoSem(idx){ return (S.bloqueios && S.bloqueios[idx]) || []; }
+function totalBloqueios(){ return Object.values(S.bloqueios||{}).reduce((a,x)=>a+(x?x.length:0),0); }
+
+/* ---------- Derivação (grafo, ctx) ---------- */
+function derive(){
+  D = {};
+  const { matriz, historico, gnh } = S.parsed;
+  if (!matriz || !historico || !gnh) return;
+  D.matriz = matriz; D.hist = historico;
+  D.byCod = new Map(matriz.disciplinas.map(d=>[d.codigo,d]));
+  D.grafo = K.construirGrafo(matriz.disciplinas);
+  // aplicar equivalências aos códigos da GNH
+  const eq = S.equivalencias || {};
+  const gnhEff = gnh.map(t => ({ ...t, codigo: eq[t.codigo] || t.codigo }));
+  D.gnhEff = gnhEff;
+  D.gnhByCod = new Map();
+  for (const t of gnhEff){ if(!D.gnhByCod.has(t.codigo)) D.gnhByCod.set(t.codigo,[]); D.gnhByCod.get(t.codigo).push(t); }
+  // turmas em-andamento (por código+turma do histórico)
+  D.cursadasBase = new Set(historico.cursadasAprovadas);
+  D.emAndamento = historico.emAndamento.slice();
+  D.ctx = { matrizByCod:D.byCod, grafo:D.grafo, gnhByCod:D.gnhByCod, equiv:eq, pref:S.preferencias };
+  D.projecao = projetar();
+}
+
+function turmaDe(cod, turmaId){
+  const arr = D.gnhByCod.get(cod) || [];
+  return arr.find(t=>t.turma===turmaId) || arr[0] || null;
+}
+function tipoDe(d){
+  if (!d) return 'OPT';
+  if (!d.isOpcional) return 'OBR';
+  if (d.conjuntoOptativo==='1161') return 'HUM';
+  if (d.conjuntoOptativo==='1159') return 'OPT';
+  if (d.conjuntoOptativo==='1160') return 'TRI';
+  return 'OPT';
+}
+
+/* ---------- Projeção dos semestres ---------- */
+function rotuloSem(idx){ // idx 0 = 2026/1
+  let ano = 2026 + Math.floor((idx+0)/2);
+  let per = (idx % 2) + 1;
+  // idx0 ->2026/1, idx1->2026/2, idx2->2027/1 ...
+  ano = 2026 + Math.floor(idx/2); per = (idx%2)+1;
+  return `${ano}/${per}`;
+}
+function manualNoSem(idx){
+  const out = [];
+  const m = S.manuais;
+  for (const cod in m.estagios){ if (m.estagios[cod]===idx) out.push(cod); }
+  return out;
+}
+function extrasAteSem(idx){
+  const m = S.manuais;
+  return {
+    eletivaManual: (m.eletiva.sem!=null && m.eletiva.sem<=idx) ? (m.eletiva.h||0) : 0,
+    extensaoManual:(m.extensao.sem!=null && m.extensao.sem<=idx) ? (m.extensao.h||0) : 0,
+  };
+}
+function cursadasComManuais(baseSet, idx){
+  const s = new Set(baseSet);
+  const m = S.manuais;
+  for (const cod in m.estagios){ if (m.estagios[cod]!=null && m.estagios[cod]<=idx) s.add(cod); }
+  return s;
+}
+function formaturaOK(horas, idx){
+  const m = S.manuais;
+  return horas.obrigatorias.faltante===0 && horas.conj1159.faltante===0 && horas.conj1161.faltante===0 &&
+    horas.trilhas.validadas>=K.REQUISITOS.trilhasNecessarias && horas.trilhas.faltante===0 &&
+    horas.eletivas.faltante===0 && horas.extensao.faltante===0 &&
+    (m.enade.done && m.enade.sem!=null && m.enade.sem<=idx) &&
+    D.cursadasFinal && D.cursadasFinal.has('ICSX41');
+}
+
+function calcHorasIdx(cursadasSet, idx){
+  const extras = extrasAteSem(idx);
+  // extensão manual soma à extensão cursada
+  const h = K.calcularHoras(D.matriz, cursadasSet, { eletivaManual: extras.eletivaManual });
+  if (extras.extensaoManual){ h.extensao.cursada += extras.extensaoManual; h.extensao.faltante = Math.max(0, h.extensao.total - h.extensao.cursada); h.extensao.ok = h.extensao.faltante===0; }
+  return h;
+}
+
+function projetar(){
+  const sems = [];
+  // Semestre 0 = atual (2026/1) — em andamento, leitura
+  const andDiscs = D.emAndamento.map(cod=>{
+    const reg = D.hist.cursadas.find(c=>c.codigo===cod);
+    const t = turmaDe(cod, reg && reg.turma);
+    return { disciplina: D.byCod.get(cod), turma: t, horarios: t?t.horarios:[], bloqueado:false, andamento:true };
+  }).filter(x=>x.disciplina);
+  let cursadas = cursadasComManuais(D.cursadasBase, 0);
+  let h0 = calcHorasIdx(cursadas, 0);
+  sems.push({ idx:0, rotulo:rotuloSem(0), status:'atual', grade:{ sel:andDiscs }, grades:[], escolhida:true, horas:h0, candidatas:[], manuais:manualNoSem(0), formatura:false, bloqueios:blocosDoSem(0) });
+  // a partir de 2026/2 assume-se que as em-andamento foram aprovadas
+  cursadas = new Set([...cursadas, ...D.emAndamento]);
+
+  const MAXSEM = 14;
+  for (let idx=1; idx<=MAXSEM; idx++){
+    const curIdx = new Set(cursadas);
+    const cand = K.candidatasSemestre(D.ctx, curIdx, new Set(), true);
+    const faltObrig = new Set(D.matriz.disciplinas.filter(d=>!d.isOpcional && !curIdx.has(d.codigo)).map(d=>d.codigo));
+    const ord = K.prioridade(D.ctx, cand, curIdx, faltObrig);
+    const blocos = blocosDoSem(idx);
+    const ger = K.gerarGrades(D.ctx, ord, S.preferencias, blocos, true, Date.now()+700);
+    let grades = ger.grades;
+
+    // grade personalizada salva
+    const pers = (S.custom[idx]||[]).map(c=>reconstruirGrade(c, curIdx, blocos)).filter(Boolean);
+
+    // escolha do usuário?
+    const esc = S.escolhas[idx];
+    let escolhida = null, confirmada = false;
+    if (esc){ escolhida = reconstruirGrade(esc, curIdx, blocos); confirmada = true; }
+    if (!escolhida) escolhida = grades[0] || { sel:[] };
+
+    // aplica disciplinas não-rascunho
+    const add = escolhida.sel.filter(s=>!s.bloqueado).map(s=>s.disciplina.codigo);
+    const manuaisAqui = manualNoSem(idx);
+    cursadas = new Set([...cursadas, ...add]);
+    cursadas = cursadasComManuais(cursadas, idx); // inclui estágios marcados <= idx
+
+    const horas = calcHorasIdx(cursadas, idx);
+    D.cursadasFinal = cursadas;
+    const formatura = formaturaOK(horas, idx);
+
+    sems.push({ idx, rotulo:rotuloSem(idx), status: confirmada?'confirmado':'futuro',
+      grade:escolhida, grades, personalizadas:pers, escolhida:confirmada, horas, candidatas:ord,
+      manuais:manuaisAqui, formatura, estourou:ger.estourou, inviavel: grades.length===0, bloqueios:blocos });
+
+    if (formatura) break;
+    // se nada novo entrou e não há candidatas, evita loop infinito
+    if (add.length===0 && manuaisAqui.length===0 && idx>1 && grades.length===0) break;
+  }
+  return sems;
+}
+
+function reconstruirGrade(escolha, cursadas, blocos){
+  if (!escolha || !escolha.codigos) return null;
+  blocos = blocos || [];
+  const sel = [];
+  for (const cod of escolha.codigos){
+    const d = D.byCod.get(cod); if (!d) continue;
+    const t = turmaDe(cod, (escolha.turmas||{})[cod]);
+    const blk = t ? K.bloqueado(t.horarios, blocos) : false;
+    sel.push({ disciplina:d, turma:t, horarios:t?t.horarios:[], bloqueado:blk, fanout:0, trilhaRank:0, obrig:!d.isOpcional });
+  }
+  return { sel, score: escolha.score||0, custom: !!escolha.custom };
+}
+
+/* ===================================================================
+   RENDER
+   =================================================================== */
+function render(){
+  if (S.fase==='upload') return renderUpload();
+  if (S.fase==='divergencias') return renderDivergencias();
+  if (S.fase==='preferencias') return renderPreferencias();
+  if (S.fase==='app'){ derive(); return renderApp(); }
+}
+
+/* ---------- Upload ---------- */
+function renderUpload(){
+  const f = S.files;
+  const zonas = [
+    ['matriz','Matriz Curricular','📚','Grade do curso: disciplinas, períodos e pré-requisitos.'],
+    ['historico','Histórico Escolar','🎓','Disciplinas cursadas, situação e coeficientes.'],
+    ['gnh','Grade na Hora','🗓️','Turmas abertas no semestre atual com horários.'],
+  ];
+  root.innerHTML = `
+  <div class="welcome">
+    <div class="brand"><div class="logo">C+</div><div><h1>Compass+</h1><div class="muted" style="font-size:13px">Planejamento acadêmico · UTFPR — Sistemas de Informação</div></div></div>
+    <p class="sub">Envie os três PDFs do Portal do Aluno. Tudo é processado <b>localmente no seu navegador</b> — nenhum dado é enviado a servidores.</p>
+    <div class="dropzones">
+      ${zonas.map(([k,t,ic,desc])=>`
+        <div class="dz ${f[k]?'done':''}" data-dz="${k}">
+          <div class="ico">${f[k]?'✅':ic}</div>
+          <h3>${t}</h3>
+          ${f[k] ? `<div class="fname">${esc(f[k].name)}</div>` : `<p>${desc}</p>`}
+          <div class="bar"><i data-bar="${k}" style="width:${f[k]?100:0}%"></i></div>
+          <button class="btn btn-sm btn-ghost" data-pick="${k}">${f[k]?'Trocar arquivo':'Selecionar PDF'}</button>
+          <input type="file" accept="application/pdf,.pdf" data-input="${k}" class="hidden">
+        </div>`).join('')}
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" id="processar" ${(!f.matriz||!f.historico||!f.gnh)?'disabled':''}>Processar e planejar →</button>
+      <span class="muted" id="proc-status"></span>
+      ${localStorage.getItem('compass_state')?'<button class="btn btn-ghost" id="restaurar">Restaurar sessão salva</button>':''}
+    </div>
+    <div class="steps">
+      ${['Upload dos PDFs','Resolução de divergências','Preferências','Planejamento'].map((s,i)=>`<div class="step"><b>${i+1}</b>${s}</div>`).join('')}
+    </div>
+  </div>`;
+}
+
+/* ---------- Divergências (Módulo 1.5) ---------- */
+function renderDivergencias(){
+  const d = S.divergPendentes[0];
+  if (!d){ S.fase='preferencias'; salvar(); return render(); }
+  const total = S.divergTotal || S.divergPendentes.length;
+  const atual = total - S.divergPendentes.length + 1;
+  root.innerHTML = `
+  <div class="overlay"><div class="modal">
+    <div class="diverg-progress">Divergência ${atual} de ${total}</div>
+    <h2>Confirme a equivalência de disciplina</h2>
+    <div class="q"><b>“${esc(d.gnhNome)}”</b> aparece na Grade na Hora com o código <b class="mono">${esc(d.gnhCod)}</b>,
+      mas na matriz como <b class="mono">${esc(d.matrizCod)}</b> (<b>${esc(d.matrizNome)}</b>).<br>
+      Similaridade de nome: <b>${Math.round(d.score*100)}%</b>. São a mesma disciplina?</div>
+    <div class="row">
+      <button class="btn btn-ghost" data-div="no">✗ Não, são diferentes</button>
+      <button class="btn btn-primary" data-div="yes">✓ Sim, mesma disciplina</button>
+    </div>
+  </div></div>`;
+}
+
+/* ---------- Preferências (Módulo 2) ---------- */
+function renderPreferencias(){
+  const p = S.preferencias;
+  const m = S.parsed.matriz;
+  const subareas = m.resumo.conjuntosOptativos.find(c=>c.id==='1160');
+  if (!p.preferenciaTrilhas.length) p.preferenciaTrilhas = Object.keys(K.TRILHA_SUBAREAS);
+  const trilhas = p.preferenciaTrilhas;
+  root.innerHTML = `
+  <div class="pref-screen">
+    <div class="brand"><div class="logo">C+</div><div><h1>Preferências</h1><div class="muted" style="font-size:13px">Ajuste antes de calcular as grades. Você pode alterar depois na barra lateral.</div></div></div>
+    <div class="pref-grid">
+      <div class="card">
+        <h3>🏫 Campus</h3>
+        <div class="spread"><span>Restringir a um único campus</span><div class="toggle ${p.campusUnico?'on':''}" data-pref="campusUnico"><i></i></div></div>
+        <div class="seg ${p.campusUnico?'':'hidden'}" style="margin-top:12px" id="campus-seg">
+          ${['CURITIBA','ECOVILLE','NEOVILLE'].map(c=>`<button class="${p.campus===c?'on':''}" data-campus="${c}">${c==='CURITIBA'?'Curitiba (CB)':c==='ECOVILLE'?'Ecoville (*)':'Neoville (**)'}</button>`).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <h3>🕑 Turnos disponíveis</h3>
+        <div class="checks">
+          ${[['M','Manhã'],['T','Tarde'],['N','Noite']].map(([k,t])=>`<div class="check ${p.turnos.includes(k)?'on':''}" data-turno="${k}">${t} (${k})</div>`).join('')}
+        </div>
+        <div class="hint">Selecione ao menos um turno.</div>
+      </div>
+      <div class="card">
+        <h3>📦 Carga por semestre</h3>
+        <div class="spread"><span class="muted">Mínimo</span><span class="bignum" id="lbl-min">${p.cargaMin}</span></div>
+        <input type="range" min="1" max="10" value="${p.cargaMin}" data-range="cargaMin" style="width:100%">
+        <div class="spread" style="margin-top:10px"><span class="muted">Máximo</span><span class="bignum" id="lbl-max">${p.cargaMax}</span></div>
+        <input type="range" min="1" max="10" value="${p.cargaMax}" data-range="cargaMax" style="width:100%">
+        <div class="hint">O sistema priorizará a menor quantidade dentro desta faixa.</div>
+      </div>
+      <div class="card">
+        <h3>🧭 Preferência de trilhas (Terceiro Estrato)</h3>
+        <div class="hint" style="margin-top:0;margin-bottom:10px">Arraste para ordenar (1 = mais preferida). Usado para desempatar grades.</div>
+        <ul class="trilha-list" id="trilhas">
+          ${trilhas.map((id,i)=>`<li data-id="${id}"><span class="rank">${i+1}</span><span>${esc(K.TRILHA_SUBAREAS[id])}</span><span class="mono muted" style="font-size:11px">[${id}]</span><span class="grip">⋮⋮</span></li>`).join('')}
+        </ul>
+      </div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <h3>🔒 Horários travados</h3>
+      <div class="hint" style="margin-top:0">Os bloqueios agora são definidos <b>por semestre</b>, diretamente na aba de cada semestre do planejador — assim você pode ter horários travados diferentes a cada período.</div>
+    </div>
+    <div class="actions" style="margin-top:22px;display:flex;gap:12px">
+      <button class="btn btn-primary" id="ir-app">Calcular grades →</button>
+      <button class="btn btn-ghost" id="voltar-upload">← Voltar</button>
+    </div>
+  </div>`;
+  initTrilhasDrag();
+}
+
+function blockGridHTML(idx){
+  const blocos = (S.bloqueios && S.bloqueios[idx]) || [];
+  const periods = [['M',6],['T',6],['N',5]];
+  let rows = '';
+  periods.forEach(([per,n],pi)=>{
+    for (let s=1;s<=n;s++){
+      rows += `<tr><td class="rowlbl">${per}${s}</td>`;
+      for (let d=2;d<=7;d++){
+        const blk = blocos.find(b=>b.diaSemana===d&&b.periodo===per&&b.slot===s);
+        rows += `<td class="slot ${blk?'blk':''}" data-sem="${idx}" data-d="${d}" data-p="${per}" data-s="${s}" title="${blk?esc(blk.nome):''}">${blk?esc(blk.nome.slice(0,4)):''}</td>`;
+      }
+      rows += '</tr>';
+    }
+    if (pi<2) rows += '<tr class="sep"><td colspan="7"></td></tr>';
+  });
+  return `<div class="cal-wrap"><table class="blockgrid"><thead><tr><th></th>${[2,3,4,5,6,7].map(d=>`<th>${K.DIAS[d].slice(0,3)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function blocosSemestreHTML(sem){
+  const n = (S.bloqueios && S.bloqueios[sem.idx] ? S.bloqueios[sem.idx].length : 0);
+  return `<details class="personalize" id="blocos-${sem.idx}" ${n?'open':''} style="margin-top:14px">
+    <summary>🔒 Horários travados de ${esc(sem.rotulo)} <span class="muted" style="font-weight:400;font-size:12px">— específicos deste semestre (${n})</span></summary>
+    <div style="padding:0 16px 8px" class="muted">Clique nas células para travar horários só neste semestre (ex.: trabalho, academia). Disciplinas sobre um bloqueio entram como rascunho.</div>
+    <div style="padding:0 16px 16px">${blockGridHTML(sem.idx)}</div>
+  </details>`;
+}
+
+function initTrilhasDrag(){
+  const ul = $('#trilhas'); if (!ul || !window.Sortable) return;
+  Sortable.create(ul, { animation:150, handle:'.grip', ghostClass:'sortable-ghost',
+    onEnd(){ S.preferencias.preferenciaTrilhas = $$('#trilhas li').map(li=>li.dataset.id);
+      $$('#trilhas .rank').forEach((r,i)=>r.textContent=i+1); salvar(); } });
+}
+
+/* ===================================================================
+   APP principal
+   =================================================================== */
+function renderApp(){
+  const al = D.hist.aluno;
+  const proj = D.projecao;
+  if (S.abaAtiva >= proj.length) S.abaAtiva = proj.length-1;
+  const sem = proj[S.abaAtiva];
+  const restantes = proj.filter(s=>s.idx>0 && !s.formatura).length + (proj.some(s=>s.formatura)?1:0);
+  root.innerHTML = `
+  <div class="topbar">
+    <button class="btn btn-sm btn-ghost" id="toggle-side">☰</button>
+    <div class="logo">C+</div><div class="who">${esc(al.nome||'Aluno')}</div>
+    <div class="meta">
+      <div class="stat"><b>${(al.coeficienteAbsoluto||0).toFixed(4)}</b><span>Coef. absoluto</span></div>
+      <div class="stat"><b>${proj.length-1}</b><span>Semestres projetados</span></div>
+      <div class="stat"><b>${D.hist.aluno.periodoAtual}º</b><span>Período atual</span></div>
+      <button class="btn btn-sm btn-danger" id="reiniciar">Reiniciar tudo</button>
+    </div>
+  </div>
+  <div class="layout">
+    <aside class="sidebar ${S.sidebarCollapsed?'collapsed':''}" id="sidebar">${sidebarHTML(sem)}</aside>
+    <main class="main">
+      <div class="tabs">${proj.map((s,i)=>tabHTML(s,i)).join('')}</div>
+      ${semestreHTML(sem)}
+    </main>
+  </div>`;
+}
+
+function sidebarHTML(sem){
+  const h = sem.horas;
+  const row = (label,obj,cls='',help='') => {
+    const pct = obj.total?Math.min(100,Math.round(obj.cursada/obj.total*100)):100;
+    return `<tr class="${obj.faltante===0?'done':''} ${cls}">
+      <td class="area">${esc(label)}${help?`<span class="q-help" data-tip="${esc(help)}">?</span>`:''}
+        <div class="bar"><i style="width:${pct}%;background:${obj.faltante===0?'var(--success)':'var(--primary)'}"></i></div></td>
+      <td>${obj.total}h</td><td>${obj.faltante===0?'<span style="color:var(--success)">✓</span>':obj.faltante+'h'}</td></tr>`;
+  };
+  const sub = h.subStatus;
+  const trilhaRows = Object.keys(sub).filter(id=>sub[id].cursada>0 || S.preferencias.preferenciaTrilhas.indexOf(id)<3)
+    .map(id=>`<tr class="sub2 ${sub[id].faltante===0?'done':''}"><td>↳ ${esc(sub[id].nome)} ${sub[id].validada?'<span style="color:var(--success)">✓</span>':''}</td><td>${K.REQUISITOS.trilhaMin}h</td><td>${sub[id].faltante}h</td></tr>`).join('');
+  return `
+  <div class="side-sec">
+    <h4>📊 Horas faltantes <span class="muted" style="text-transform:none;font-weight:400">· ao fim de ${sem.rotulo}</span></h4>
+    <table class="htable"><tbody>
+      ${row('Obrigatórias', h.obrigatorias,'', 'Disciplinas obrigatórias da matriz, incluindo estágios e TCC.')}
+      ${row('Optativas (total)', h.optativasTotal,'', 'Soma de Segundo Estrato, Humanidades e Trilhas.')}
+      <tr class="sub ${h.conj1159.faltante===0?'done':''}"><td>↳ Segundo Estrato [1159]</td><td>${h.conj1159.total}h</td><td>${h.conj1159.faltante||'✓'}${h.conj1159.faltante?'h':''}</td></tr>
+      <tr class="sub ${h.conj1161.faltante===0?'done':''}"><td>↳ Humanidades [1161]</td><td>${h.conj1161.total}h</td><td>${h.conj1161.faltante||'✓'}${h.conj1161.faltante?'h':''}</td></tr>
+      <tr class="sub ${h.trilhas.faltante===0?'done':''}"><td>↳ Trilhas [1160] · ${h.trilhas.validadas}/3 validadas</td><td>${h.trilhas.total}h</td><td>${h.trilhas.faltante}h</td></tr>
+      ${trilhaRows}
+      ${row('Eletivas', h.eletivas,'', 'Qualquer disciplina da UTFPR. Registre manualmente abaixo.')}
+      ${row('Extensão', h.extensao,'', '330h: 60h via Trab. de Integração 1 + 270h de CCE/optativas extensionistas.')}
+      ${row('Complementares', h.complementares,'', 'Atividades Complementares (ICSX50).')}
+    </tbody></table>
+  </div>
+  <div class="side-sec">
+    <h4>🧩 Itens não presenciais / manuais</h4>
+    ${manuaisHTML()}
+  </div>
+  <div class="side-sec">
+    <h4>⚙️ Preferências</h4>
+    <button class="btn btn-sm btn-ghost" id="editar-pref" style="width:100%">Editar campus, turnos, faixa e bloqueios</button>
+    <div class="muted" style="font-size:11px;margin-top:8px">Campus: ${S.preferencias.campusUnico?S.preferencias.campus:'Qualquer'} · Turnos: ${S.preferencias.turnos.join(' ')} · Carga: ${S.preferencias.cargaMin}–${S.preferencias.cargaMax} · Bloqueios: ${totalBloqueios()}</div>
+  </div>`;
+}
+
+function manuaisHTML(){
+  const m = S.manuais;
+  const opts = D.projecao.map(s=>`<option value="${s.idx}">${s.rotulo}</option>`).join('');
+  const estagioRow = (cod,nome) => {
+    const done = m.estagios[cod]!=null;
+    return `<div class="spread" style="margin-bottom:8px">
+      <div><div style="font-size:12px;font-weight:600">${esc(nome)}</div><div class="muted" style="font-size:10px">${esc(cod)} · 200h</div></div>
+      ${done
+        ? `<div class="flx"><span class="chip" style="color:var(--success)">✓ ${rotuloSem(m.estagios[cod])}</span><button class="btn btn-sm btn-ghost" data-manual="estagio-undo" data-cod="${cod}">✗</button></div>`
+        : `<div class="flx"><select class="manual-sel" data-cod="${cod}" style="background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:3px 6px;font-size:11px">${opts}</select><button class="btn btn-sm btn-primary" data-manual="estagio-do" data-cod="${cod}">Concluir</button></div>`}
+    </div>`;
+  };
+  return `
+    ${estagioRow('ICSX51','Estágio 1')}
+    ${estagioRow('ICSX52','Estágio 2')}
+    <div class="spread" style="margin-bottom:8px">
+      <div><div style="font-size:12px;font-weight:600">Eletivas externas</div><div class="muted" style="font-size:10px">meta 105h</div></div>
+      <div class="flx"><input type="number" min="0" max="300" value="${m.eletiva.h||0}" data-manualnum="eletiva" style="width:54px;background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:3px 6px;font-size:11px">h
+      <select data-manualsem="eletiva" style="background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:3px 6px;font-size:11px">${opts}</select></div>
+    </div>
+    <div class="spread" style="margin-bottom:8px">
+      <div><div style="font-size:12px;font-weight:600">Extensão (CCE)</div><div class="muted" style="font-size:10px">faltam 270h</div></div>
+      <div class="flx"><input type="number" min="0" max="330" value="${m.extensao.h||0}" data-manualnum="extensao" style="width:54px;background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:3px 6px;font-size:11px">h
+      <select data-manualsem="extensao" style="background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:3px 6px;font-size:11px">${opts}</select></div>
+    </div>
+    <div class="spread">
+      <div><div style="font-size:12px;font-weight:600">ENADE Concluinte</div><div class="muted" style="font-size:10px">requisito de formatura</div></div>
+      ${m.enade.done
+        ? `<div class="flx"><span class="chip" style="color:var(--success)">✓ ${rotuloSem(m.enade.sem)}</span><button class="btn btn-sm btn-ghost" data-manual="enade-undo">✗</button></div>`
+        : `<div class="flx"><select data-manualsem="enade" style="background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:3px 6px;font-size:11px">${opts}</select><button class="btn btn-sm btn-primary" data-manual="enade-do">Marcar</button></div>`}
+    </div>`;
+}
+
+function tabHTML(s,i){
+  const st = s.formatura ? 'formatura' : s.status;
+  const lbl = s.formatura?'🎓 Formatura':s.status==='atual'?'atual':s.status==='confirmado'?'confirmado ✓':'futuro (est.)';
+  return `<button class="tab ${st} ${i===S.abaAtiva?'active':''}" data-tab="${i}">
+    <span class="ttl">${s.rotulo}</span><span class="tst">${lbl}</span></button>`;
+}
+
+function semestreHTML(sem){
+  if (sem.idx===0) return semAtualHTML(sem);
+  if (sem.formatura) return formaturaHTML(sem) + planoSemestreHTML(sem);
+  return planoSemestreHTML(sem);
+}
+
+function semAtualHTML(sem){
+  const sel = sem.grade.sel;
+  return `
+  <div class="sem-head"><h2>${sem.rotulo} — Semestre atual</h2><span class="chip" style="color:var(--secondary)">Em andamento</span></div>
+  <div class="banner info">ℹ️ Estas são suas disciplinas matriculadas em ${sem.rotulo} (histórico). Elas aparecem como <b>em andamento</b> e não são editáveis. A projeção dos próximos semestres assume que serão aprovadas.</div>
+  <div class="gcard open"><div class="gh"><div><div class="gtitle">Disciplinas em andamento</div><div class="gsub">${sel.length} disciplinas · ${sel.reduce((a,s)=>a+(s.disciplina.chSemanal||0),0)} aulas/sem</div></div></div>
+    <div class="gbody">${sel.map(s=>discRowHTML(s)).join('')}</div></div>
+  ${calendarHTML(sem, sel)}
+  ${legendaHTML()}`;
+}
+
+function planoSemestreHTML(sem){
+  const escolhida = sem.grade;
+  const banners = [];
+  if (sem.status!=='confirmado') banners.push(`<div class="banner warn">⚠ Grade estimada — sem dados reais de oferta para ${sem.rotulo}. Baseada na Grade na Hora 2026/1; será refinada quando você carregar a GNH do semestre. <span class="b-actions"><button class="btn btn-sm btn-ghost" data-upd-gnh="${sem.idx}">Atualizar GNH</button></span></div>`);
+  if (sem.inviavel) banners.push(`<div class="banner warn">⚠ Não há disciplinas suficientes na oferta para atingir o mínimo de ${S.preferencias.cargaMin}. Mostrando a melhor grade possível.</div>`);
+  // rascunho banner
+  const blocos = sem.bloqueios || [];
+  const rasc = escolhida.sel.filter(s=>s.bloqueado);
+  rasc.forEach(s=>{
+    const blkSlots = s.horarios.filter(h=>blocos.some(b=>b.diaSemana===h.diaSemana&&b.periodo===h.periodo&&b.slot===h.slot));
+    const nomesBlk = [...new Set(blkSlots.map(h=>{const b=blocos.find(b=>b.diaSemana===h.diaSemana&&b.periodo===h.periodo&&b.slot===h.slot);return b?b.nome:'';}))].join(', ');
+    banners.push(`<div class="banner warn">⚠ <b>“${esc(s.disciplina.nome)}”</b> ocupa o horário travado <b>${esc(nomesBlk)}</b> em ${sem.rotulo}. Resolva o conflito para que ela conte nos próximos semestres.
+      <span class="b-actions"><button class="btn btn-sm btn-ghost" data-rm-rasc="${s.disciplina.codigo}">Remover da grade</button><button class="btn btn-sm btn-ghost" data-abrir-blocos="${sem.idx}">Editar bloqueio</button></span></div>`);
+  });
+
+  const cards = [...sem.grades.map((g,i)=>gradeCardHTML(g,i,sem)), ...(sem.personalizadas||[]).map((g,i)=>gradeCardHTML(g,'p'+i,sem,true))];
+  return `
+  <div class="sem-head"><h2>${sem.rotulo} ${sem.formatura?'🎓':''}</h2>
+    <div class="flx">${sem.status==='confirmado'?`<span class="chip" style="color:var(--success)">confirmado ✓</span> <button class="btn btn-sm btn-ghost" data-desconfirmar="${sem.idx}">Refazer</button>`:'<span class="chip">futuro estimado</span>'}</div>
+  </div>
+  ${banners.join('')}
+  <div class="grades">${cards.length?cards.join(''):'<div class="banner info">Nenhuma grade gerada para este semestre.</div>'}</div>
+  ${escolhida.sel.length?calendarHTML(sem, escolhida.sel):''}
+  ${escolhida.sel.length?legendaHTML():''}
+  ${blocosSemestreHTML(sem)}
+  ${personalizeHTML(sem)}`;
+}
+
+function gradeCardHTML(g,i,sem,custom){
+  const isSel = sem.status==='confirmado' && sameGrade(g, sem.grade);
+  const rec = i===0 && !custom;
+  const aulas = g.sel.reduce((a,s)=>a+(s.disciplina.chSemanal||0),0);
+  const nblk = g.sel.filter(s=>s.bloqueado).length;
+  const open = (typeof i==='number'&&i===0) || isSel;
+  return `<div class="gcard ${rec?'rec':''} ${isSel?'sel':''} ${open?'open':''}" data-card="${i}">
+    <div class="gh" data-toggle-card="${i}">
+      <div><div class="gtitle">${custom?'Grade personalizada':'Grade #'+(i+1)}${rec?' <span class="chip" style="color:var(--secondary)">Recomendada</span>':''}</div>
+        <div class="gsub">${g.sel.length} disciplinas · ${aulas} aulas/sem · ${nblk?('<span style="color:var(--secondary)">'+nblk+' em conflito</span>'):'sem conflitos'}</div></div>
+      <div class="score">${typeof g.score==='number'?('<span class="dot"></span> Score: '+g.score):''}</div>
+    </div>
+    <div class="gbody">
+      ${g.sel.map(s=>discRowHTML(s)).join('')}
+      <div class="gactions">
+        ${sem.status==='confirmado'&&sameGrade(g,sem.grade)?'<span class="chip" style="color:var(--success)">✓ Grade escolhida</span>':`<button class="btn btn-sm btn-primary" data-escolher="${i}">Escolher esta grade</button>`}
+      </div>
+    </div></div>`;
+}
+function sameGrade(a,b){ if(!a||!b)return false; const ka=a.sel.map(s=>s.disciplina.codigo).sort().join(','); const kb=b.sel.map(s=>s.disciplina.codigo).sort().join(','); return ka===kb && ka.length>0; }
+
+function discRowHTML(s){
+  const d = s.disciplina; const tp = tipoDe(d);
+  const tag = tp==='OBR'?'OBR':tp==='HUM'?'HUM':tp==='TRI'?'TRI':tp==='OPT'?'OPT':'ELE';
+  const turno = s.horarios.length?[...new Set(s.horarios.map(h=>h.periodo))].join(''):'—';
+  const reg = D.hist.cursadas.find(c=>c.codigo===d.codigo);
+  const reprov = reg && reg.situacao==='REPROVADO';
+  const prereqInfo = d.preRequisitos.map(p=>`${p} ${ (D.cursadasFinal&&D.cursadasFinal.has(p))?'✓':'•'}`).join(', ');
+  const tip = `${esc(d.nome)}\\nCódigo: ${esc(d.codigo)}\\n${s.turma?('Turma '+esc(s.turma.turma)+(s.turma.professor?(' · '+esc(s.turma.professor)):'')):''}\\n${s.horarios.map(h=>`${K.DIAS[h.diaSemana].slice(0,3)} ${h.periodo}${h.slot} (${esc(h.sala||'')})`).join(', ')}\\nPré-req: ${prereqInfo||'nenhum'}\\n${d.chExt>0?('Extensionista: '+d.chExt+'h'):''}`;
+  return `<div class="disc-row ${s.bloqueado?'rascunho':''} ${s.andamento?'':''}" data-tip="${esc(tip)}">
+    ${s.andamento?'<span style="color:var(--secondary)">●</span>':(s.bloqueado?'<span style="color:var(--secondary)">⚠</span>':'<span style="color:var(--success)">✓</span>')}
+    <span class="code">${esc(d.codigo)}</span>
+    <span class="nm">${esc(d.nome)}${reprov?' <span class="muted" style="font-size:10px">(reprovada antes)</span>':''}</span>
+    ${d.chExt>0?'<span class="ext-dot" title="Extensionista"></span>':''}
+    <span class="tag ${tag}">${tag}</span><span class="tag turno">${turno}</span>
+    <span class="muted mono" style="font-size:11px">${d.chSemanal}h/sem</span>
+  </div>`;
+}
+
+/* ---------- Cronograma semanal ---------- */
+function calendarHTML(sem, sel){
+  const grid = {};
+  const blocos = sem.bloqueios || [];
+  const put = (h, data) => { grid[h.diaSemana+'-'+h.periodo+'-'+h.slot] = data; };
+  // bloqueios
+  for (const b of blocos) put(b, { tipo:'blk', nome:b.nome });
+  // disciplinas
+  for (const s of sel){
+    const tp = s.andamento?'andamento':tipoDe(s.disciplina);
+    for (const h of s.horarios){
+      const blk = blocos.some(b=>b.diaSemana===h.diaSemana&&b.periodo===h.periodo&&b.slot===h.slot);
+      const ev = { tipo: s.bloqueado||blk&&!s.andamento?'rascunho':tp, nome:s.disciplina.nome, code:s.disciplina.codigo,
+        sala:h.sala, prof:s.turma?s.turma.professor:'', ext:s.disciplina.chExt>0, rascunho:s.bloqueado };
+      if (!grid[h.diaSemana+'-'+h.periodo+'-'+h.slot] || grid[h.diaSemana+'-'+h.periodo+'-'+h.slot].tipo==='blk')
+        put(h, ev);
+    }
+  }
+  const periods = [['M',6],['T',6],['N',5]];
+  let rows='';
+  periods.forEach(([per,n],pi)=>{
+    for (let s=1;s<=n;s++){
+      rows += `<tr><td class="tlbl">${per}${s}</td>`;
+      for (let d=2;d<=7;d++){
+        const e = grid[d+'-'+per+'-'+s];
+        if (!e){ rows += `<td class="cell"></td>`; continue; }
+        if (e.tipo==='blk'){ rows += `<td class="cell"><div class="ev blk" data-tip="Bloqueio: ${esc(e.nome)}">${esc(e.nome.slice(0,10))}</div></td>`; continue; }
+        const cls = e.rascunho?'rascunho':e.tipo;
+        const tip = `${esc(e.nome)}\\n${esc(e.code)}${e.prof?(' · '+esc(e.prof)):''}\\nSala ${esc(e.sala||'')}${e.rascunho?'\\n⚠ Em conflito com bloqueio':''}`;
+        rows += `<td class="cell"><div class="ev ${cls} ${e.ext?'ext':''}" data-tip="${esc(tip)}">${e.rascunho?'<span class="warn">⚠</span>':''}<div>${esc(e.code)}</div><div class="c">${esc(e.sala||'')}</div></div></td>`;
+      }
+      rows += '</tr>';
+    }
+    if (pi<2) rows += '<tr class="sep"><td colspan="7"></td></tr>';
+  });
+  return `<h3 style="margin:22px 0 0;font-size:15px">🗓️ Cronograma semanal</h3>
+  <div class="cal-wrap"><table class="cal"><thead><tr><th></th>${[2,3,4,5,6,7].map(d=>`<th>${K.DIAS[d]}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function legendaHTML(){
+  const it = [['OBR','Obrigatória','var(--obr)'],['HUM','Humanidades','var(--hum)'],['OPT','Segundo Estrato','var(--estrato)'],['TRI','Trilha','var(--trilha)'],['ELE','Eletiva','var(--elet)'],['andamento','Em andamento','#39507a']];
+  return `<div class="legend">${it.map(([c,t,col])=>`<span><i style="background:${col}"></i>${t}</span>`).join('')}
+    <span><i style="background:repeating-linear-gradient(45deg,#5a4a22,#5a4a22 4px,#46391a 4px,#46391a 8px)"></i>Rascunho (conflito)</span>
+    <span><i style="background:repeating-linear-gradient(45deg,#3a3550,#3a3550 4px,#2c2840 4px,#2c2840 8px)"></i>Bloqueio</span>
+    <span><i style="box-shadow:inset 0 0 0 2px var(--ext);background:transparent"></i>Extensionista</span></div>`;
+}
+
+/* ---------- Personalização ---------- */
+function personalizeHTML(sem){
+  const cur = new Set((S.custom[sem.idx]||[]).flatMap(c=>c.codigos));
+  const customSel = (S.custom[sem.idx]&&S.custom[sem.idx][0])?S.custom[sem.idx][0]:{codigos:[],turmas:{}};
+  const selCods = new Set(customSel.codigos);
+  // horários já ocupados pela seleção custom
+  const ocup = [];
+  for (const cod of customSel.codigos){ const t=turmaDe(cod,customSel.turmas[cod]); if(t) ocup.push(...t.horarios); }
+  const itens = sem.candidatas.map(c=>{
+    const d = c.disciplina; const t = c.turmas[0];
+    const on = selCods.has(d.codigo);
+    const conf = !on && t && K.conflita(t.horarios, ocup);
+    const tp = tipoDe(d);
+    const tip = `${esc(d.nome)}\\nPré-req: ${d.preRequisitos.map(p=>p+' '+((D.cursadasFinal&&D.cursadasFinal.has(p))?'✓':'•')).join(', ')||'nenhum'}\\n${t?t.horarios.map(h=>K.DIAS[h.diaSemana].slice(0,3)+' '+h.periodo+h.slot+' ('+(h.sala||'')+')').join(', '):''}\\n${t&&t.professor?('Prof. '+esc(t.professor)):''}${d.chExt>0?('\\nExtensionista '+d.chExt+'h'):''}${conf?'\\n⛔ Conflita com a seleção atual':''}`;
+    return `<div class="pitem ${on?'on':''} ${conf?'dis':''}" data-add="${d.codigo}" data-sem="${sem.idx}" data-tip="${esc(tip)}">
+      <span class="code">${esc(d.codigo)}</span><span class="nm">${esc(d.nome)}</span>
+      <span class="tag ${tp}">${tp}</span></div>`;
+  }).join('');
+  return `<details class="personalize" ${cur.size?'open':''}>
+    <summary>🛠️ Personalizar grade <span class="muted" style="font-weight:400;font-size:12px">— monte sua própria combinação (${customSel.codigos.length} selecionadas)</span></summary>
+    <div style="padding:0 16px 8px" class="muted" style="font-size:12px">Clique para adicionar/remover. Disciplinas em conflito com a seleção ficam desabilitadas.</div>
+    <div class="plist">${itens||'<div class="muted">Sem disciplinas disponíveis.</div>'}</div>
+    <div style="padding:0 16px 16px;display:flex;gap:8px">
+      <button class="btn btn-sm btn-primary" data-salvar-custom="${sem.idx}" ${customSel.codigos.length?'':'disabled'}>Salvar como grade personalizada</button>
+      <button class="btn btn-sm btn-ghost" data-limpar-custom="${sem.idx}">Limpar</button>
+    </div></details>`;
+}
+
+/* ---------- Formatura ---------- */
+function formaturaHTML(sem){
+  const h = sem.horas; const m=S.manuais;
+  const reqs = [
+    ['Obrigatórias', h.obrigatorias.faltante===0],
+    ['Segundo Estrato [1159]', h.conj1159.faltante===0],
+    ['Humanidades [1161]', h.conj1161.faltante===0],
+    ['3 trilhas validadas + carga', h.trilhas.validadas>=3 && h.trilhas.faltante===0],
+    ['Eletivas (105h)', h.eletivas.faltante===0],
+    ['Extensão (330h)', h.extensao.faltante===0],
+    ['ENADE Concluinte', m.enade.done],
+    ['TCC 2 (ICSX41)', D.cursadasFinal && D.cursadasFinal.has('ICSX41')],
+  ];
+  return `<div class="formatura-card">
+    <div class="badge-grad">🎓</div><h2>Formatura projetada em ${sem.rotulo}!</h2>
+    <p class="muted">Todos os critérios de integralização foram satisfeitos nesta projeção.</p>
+    <ul class="req-list">${reqs.map(([t,ok])=>`<li><span class="mk">${ok?'✅':'⬜'}</span>${t}</li>`).join('')}</ul>
+  </div>`;
+}
+
+/* ===================================================================
+   EVENTOS (delegação)
+   =================================================================== */
+root.addEventListener('click', onClick);
+root.addEventListener('input', onInput);
+root.addEventListener('change', onChange);
+document.addEventListener('mousemove', onTipMove);
+
+async function onClick(e){
+  const t = e.target;
+  const pick = t.closest('[data-pick]'); if (pick){ $(`[data-input="${pick.dataset.pick}"]`).click(); return; }
+  if (t.closest('#processar')) return processar();
+  if (t.closest('#restaurar')){ S = carregar()||novoEstado(); if(S.fase==='upload')S.fase='upload'; render(); return; }
+
+  // divergências
+  const dv = t.closest('[data-div]');
+  if (dv){ const d=S.divergPendentes.shift(); if(dv.dataset.div==='yes') S.equivalencias[d.gnhCod]=d.matrizCod; salvar(); render(); return; }
+
+  // preferências
+  const pr = t.closest('[data-pref]'); if (pr){ S.preferencias.campusUnico=!S.preferencias.campusUnico; salvar(); renderPreferencias(); return; }
+  const cs = t.closest('[data-campus]'); if (cs){ S.preferencias.campus=cs.dataset.campus; salvar(); renderPreferencias(); return; }
+  const tu = t.closest('[data-turno]'); if (tu){ const k=tu.dataset.turno; const a=S.preferencias.turnos; const i=a.indexOf(k); if(i>=0){if(a.length>1)a.splice(i,1);}else a.push(k); salvar(); renderPreferencias(); return; }
+  const slot = t.closest('.blockgrid .slot'); if (slot) return toggleBloqueio(slot);
+  if (t.closest('#ir-app')){ if(!S.preferencias.turnos.length){toast('Selecione ao menos um turno');return;} S.fase='app'; S.abaAtiva=1; salvar(); render(); return; }
+  if (t.closest('#voltar-upload')){ S.fase='upload'; render(); return; }
+  if (t.closest('#editar-pref')){ S.fase='preferencias'; render(); return; }
+
+  // app
+  if (t.closest('#toggle-side')){ S.sidebarCollapsed=!S.sidebarCollapsed; $('#sidebar').classList.toggle('collapsed'); return; }
+  if (t.closest('#reiniciar')){ if(confirm('Reiniciar tudo? Isso apaga o estado salvo e volta para a tela de upload.')){ localStorage.removeItem('compass_state'); S=novoEstado(); render(); } return; }
+  const tab = t.closest('[data-tab]'); if (tab){ S.abaAtiva=+tab.dataset.tab; salvar(); render(); return; }
+  const tc = t.closest('[data-toggle-card]'); if (tc){ tc.closest('.gcard').classList.toggle('open'); return; }
+  const ch = t.closest('[data-escolher]'); if (ch) return escolherGrade(ch.dataset.escolher);
+  const rr = t.closest('[data-rm-rasc]'); if (rr) return removerRascunho(rr.dataset.rmRasc);
+  const ad = t.closest('[data-add]'); if (ad && !ad.classList.contains('dis')) return toggleCustom(ad.dataset.add, +ad.dataset.sem);
+  const sc = t.closest('[data-salvar-custom]'); if (sc) return salvarCustom(+sc.dataset.salvarCustom);
+  const lc = t.closest('[data-limpar-custom]'); if (lc){ delete S.custom[lc.dataset.limparCustom]; salvar(); render(); return; }
+  const upd = t.closest('[data-upd-gnh]'); if (upd) return atualizarGNH(+upd.dataset.updGnh);
+  const dc = t.closest('[data-desconfirmar]'); if (dc){ delete S.escolhas[+dc.dataset.desconfirmar]; salvar(); render(); return; }
+  const ab = t.closest('[data-abrir-blocos]'); if (ab){ const el=document.getElementById('blocos-'+ab.dataset.abrirBlocos); if(el){el.open=true; el.scrollIntoView({behavior:'smooth',block:'center'});} return; }
+
+  // manuais
+  const mn = t.closest('[data-manual]'); if (mn) return manualAction(mn);
+}
+
+function onInput(e){
+  const r = e.target.closest('[data-range]');
+  if (r){ const k=r.dataset.range; let v=+r.value; S.preferencias[k]=v;
+    if(k==='cargaMin'&&v>S.preferencias.cargaMax)S.preferencias.cargaMax=v;
+    if(k==='cargaMax'&&v<S.preferencias.cargaMin)S.preferencias.cargaMin=v;
+    $('#lbl-min').textContent=S.preferencias.cargaMin; $('#lbl-max').textContent=S.preferencias.cargaMax; salvar(); }
+}
+function onChange(e){
+  const mnum = e.target.closest('[data-manualnum]');
+  if (mnum){ S.manuais[mnum.dataset.manualnum].h = +mnum.value||0; salvar(); render(); return; }
+  const msem = e.target.closest('[data-manualsem]');
+  if (msem){ const k=msem.dataset.manualsem; if(k==='enade')return; S.manuais[k].sem=+msem.value; salvar(); render(); return; }
+}
+
+/* ---------- Tooltip ---------- */
+let tipEl=null;
+function onTipMove(e){
+  const el = e.target.closest('[data-tip]');
+  if (!el){ if(tipEl){tipEl.remove();tipEl=null;} return; }
+  if (!tipEl){ tipEl=document.createElement('div'); tipEl.className='tip'; document.body.appendChild(tipEl); }
+  tipEl.innerHTML = el.dataset.tip.replace(/\\n/g,'<br>').replace(/✓/g,'<span class="ok">✓</span>').replace(/⛔|⚠/g,'<span class="no">$&</span>');
+  let x=e.clientX+14, y=e.clientY+14;
+  const r=tipEl.getBoundingClientRect();
+  if (x+r.width>innerWidth) x=e.clientX-r.width-14;
+  if (y+r.height>innerHeight) y=e.clientY-r.height-14;
+  tipEl.style.left=x+'px'; tipEl.style.top=y+'px';
+}
+
+/* ---------- Ações ---------- */
+function toggleBloqueio(slot){
+  const idx=+slot.dataset.sem, d=+slot.dataset.d, p=slot.dataset.p, s=+slot.dataset.s;
+  S.bloqueios[idx] = S.bloqueios[idx] || [];
+  const arr = S.bloqueios[idx];
+  const i = arr.findIndex(b=>b.diaSemana===d&&b.periodo===p&&b.slot===s);
+  if (i>=0){ arr.splice(i,1); if(!arr.length) delete S.bloqueios[idx]; }
+  else { const nome=prompt('Nome do bloqueio (ex.: Trabalho, Academia):','Trabalho'); if(nome===null)return; arr.push({diaSemana:d,periodo:p,slot:s,nome:nome||'Bloqueio'}); }
+  salvar();
+  if (S.fase==='app'){ const open=new Set($$('details.personalize[open]').map(e=>e.id)); render(); open.forEach(id=>{const e=document.getElementById(id); if(e)e.open=true;}); }
+  else renderPreferencias();
+}
+
+function escolherGrade(i){
+  const sem = D.projecao[S.abaAtiva];
+  let g;
+  if (String(i).startsWith('p')) g = sem.personalizadas[+i.slice(1)];
+  else g = sem.grades[+i];
+  if (!g) return;
+  S.escolhas[sem.idx] = { codigos: g.sel.map(s=>s.disciplina.codigo), turmas: Object.fromEntries(g.sel.map(s=>[s.disciplina.codigo, s.turma?s.turma.turma:null])), score:g.score, custom:g.custom };
+  salvar(); toast('Grade confirmada para '+sem.rotulo+' · semestres seguintes recalculados'); render();
+}
+function removerRascunho(cod){
+  const sem = D.projecao[S.abaAtiva];
+  const e = S.escolhas[sem.idx]; if(!e)return;
+  e.codigos = e.codigos.filter(c=>c!==cod); delete e.turmas[cod];
+  salvar(); render();
+}
+function toggleCustom(cod, semIdx){
+  S.custom[semIdx] = S.custom[semIdx] || [{codigos:[],turmas:{}}];
+  const c = S.custom[semIdx][0];
+  const i = c.codigos.indexOf(cod);
+  if (i>=0){ c.codigos.splice(i,1); delete c.turmas[cod]; }
+  else { const sem=D.projecao.find(s=>s.idx===semIdx); const cand=sem.candidatas.find(x=>x.disciplina.codigo===cod); const t=cand?cand.turmas[0]:null; c.codigos.push(cod); c.turmas[cod]=t?t.turma:null; }
+  salvar(); render();
+}
+function salvarCustom(semIdx){
+  const c = S.custom[semIdx] && S.custom[semIdx][0];
+  if (!c||!c.codigos.length) return;
+  c.score = 0; c.custom = true;
+  toast('Grade personalizada salva. Clique em “Escolher esta grade” para confirmá-la.');
+  render();
+}
+function manualAction(btn){
+  const a = btn.dataset.manual, cod = btn.dataset.cod, m=S.manuais;
+  if (a==='estagio-do'){ const selEl=$(`.manual-sel[data-cod="${cod}"]`); m.estagios[cod]= selEl?+selEl.value:1; }
+  if (a==='estagio-undo'){ delete m.estagios[cod]; }
+  if (a==='enade-do'){ const sel=$('[data-manualsem="enade"]'); m.enade={done:true, sem:sel?+sel.value:0}; }
+  if (a==='enade-undo'){ m.enade={done:false,sem:null}; }
+  salvar(); render();
+}
+function atualizarGNH(semIdx){
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='application/pdf';
+  inp.onchange = async ()=>{ if(!inp.files[0])return; toast('Lendo nova Grade na Hora…');
+    try{ const pages=await extrairPaginas(inp.files[0]); const g=K.parseGNH(pages); S.parsed.gnh=g; salvar(); toast('GNH atualizada com '+g.length+' turmas.'); render(); }
+    catch(err){ toast('Falha ao ler o PDF.'); } };
+  inp.click();
+}
+
+/* ---------- Processamento dos uploads ---------- */
+async function processar(){
+  const st = $('#proc-status'); const setp=(m)=>{if(st)st.textContent=m;};
+  try{
+    setp('Lendo Matriz Curricular…');
+    const mp = await extrairPaginas(S.files.matriz);
+    const matriz = K.parseMatriz(mp);
+    if (!matriz.disciplinas.length) throw new Error('matriz');
+    setp('Lendo Histórico Escolar…');
+    const hp = await extrairPaginas(S.files.historico);
+    const historico = K.parseHistorico(hp);
+    if (!historico.aluno.matricula) throw new Error('historico');
+    setp('Lendo Grade na Hora…');
+    const gp = await extrairPaginas(S.files.gnh);
+    const gnh = K.parseGNH(gp);
+    if (!gnh.length) throw new Error('gnh');
+
+    S.parsed = { matriz, historico, gnh };
+    const eqd = K.detectarEquivalencias(matriz, gnh);
+    S.equivalencias = { ...eqd.auto };
+    S.divergPendentes = eqd.divergencias;
+    S.divergTotal = eqd.divergencias.length;
+    if (!S.preferencias.preferenciaTrilhas.length) S.preferencias.preferenciaTrilhas = Object.keys(K.TRILHA_SUBAREAS);
+    setp('Pronto!');
+    S.fase = eqd.divergencias.length ? 'divergencias' : 'preferencias';
+    salvar(); render();
+  }catch(err){
+    const nome = err.message==='matriz'?'Matriz Curricular':err.message==='historico'?'Histórico Escolar':err.message==='gnh'?'Grade na Hora':'';
+    setp('');
+    alert(nome ? `Não foi possível extrair dados do PDF [${nome}]. Verifique se o PDF tem texto selecionável (não é imagem escaneada).` : 'Erro ao processar os PDFs: '+err.message);
+    console.error(err);
+  }
+}
+
+function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2600); }
+
+/* ---------- Upload handlers (file inputs) ---------- */
+document.addEventListener('change', e=>{
+  const inp = e.target.closest('[data-input]'); if(!inp)return;
+  const k=inp.dataset.input; const file=inp.files[0]; if(!file)return;
+  if (file.type!=='application/pdf' && !/\.pdf$/i.test(file.name)){ alert('Selecione um arquivo PDF.'); return; }
+  S.files[k]=file; renderUpload();
+});
+document.addEventListener('dragover', e=>{ const dz=e.target.closest('.dz'); if(dz){e.preventDefault();dz.classList.add('drag');}});
+document.addEventListener('dragleave', e=>{ const dz=e.target.closest('.dz'); if(dz)dz.classList.remove('drag'); });
+document.addEventListener('drop', e=>{
+  const dz=e.target.closest('.dz'); if(!dz)return; e.preventDefault(); dz.classList.remove('drag');
+  const k=dz.dataset.dz; const file=e.dataTransfer.files[0]; if(!file)return;
+  if (!/pdf/i.test(file.type) && !/\.pdf$/i.test(file.name)){ alert('Solte um arquivo PDF.'); return; }
+  S.files[k]=file; renderUpload();
+});
+
+/* ---------- Bootstrap ---------- */
+(function init(){
+  const saved = carregar();
+  if (saved && saved.parsed && saved.parsed.matriz && saved.fase==='app'){ S=saved; }
+  else if (saved && saved.parsed && saved.parsed.matriz){ S=saved; }
+  else S = novoEstado();
+  // se restaurou em fase app, ok; senão começa upload
+  if (!S.parsed || !S.parsed.matriz) S.fase='upload';
+  render();
+})();
+
+</script>
+</body>
+</html>
