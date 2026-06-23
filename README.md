@@ -7,10 +7,15 @@ três PDFs do Portal do Aluno. **Tudo roda no navegador** — nenhum dado sai da
 ## Como usar
 1. Abra `index.html` em um navegador moderno (Chrome, Firefox, Edge). Precisa de internet
    apenas para carregar as bibliotecas via CDN (PDF.js, Sortable.js, Google Fonts).
-2. Envie os três PDFs nas zonas indicadas:
-   - **Matriz Curricular** → `Grade.pdf`
-   - **Histórico Escolar** → `Histórico.pdf`
-   - **Grade na Hora** → `Grade_na_Hora_BSI_2026:1.pdf`
+2. Envie a **Matriz Curricular** (`Grade.pdf`) e o **Histórico Escolar** (`Histórico.pdf`).
+   Para a **Grade na Hora**, há duas opções:
+   - **Importação automática (recomendado)**: na zona "Grade na Hora", informe o semestre
+     (ex.: `2026-1`) e clique em **Abrir JSON ↗** — isso abre a oferta oficial do site
+     *Grade na Hora* (SI · Curitiba). Salve o `.json` e solte/selecione na mesma zona.
+   - **PDF**: o `Grade_na_Hora_BSI_*.pdf` exportado do site também continua funcionando.
+   > O JSON é a oferta **pública** do curso (sem login/dados pessoais). Como o site não
+   > envia cabeçalhos CORS, o navegador não consegue baixá-lo direto — por isso o fluxo é
+   > "abrir → salvar → soltar". Seus PDFs pessoais continuam 100% locais.
 3. Confirme eventuais **divergências de código** (ex.: `IF69D` × `ICSV30`).
 4. Ajuste as **preferências** (campus, turnos, faixa de carga, ordem de trilhas).
 5. Navegue pelas abas de semestre, escolha/edite grades e marque conclusões manuais.
@@ -18,6 +23,10 @@ três PDFs do Portal do Aluno. **Tudo roda no navegador** — nenhum dado sai da
 ## O que o app faz
 - **Parsing geométrico dos PDFs** (reconstrução de linhas por coordenadas, idêntica ao
   PDF.js do navegador) → matriz, histórico e turmas abertas.
+- **Importação da Grade na Hora via JSON oficial** (`gradenahora.com.br`): a oferta de turmas
+  é lida do arquivo estático do site (campus 01/Curitiba, curso 236/SI) e convertida para a
+  mesma estrutura do parser de PDF — dados mais limpos e completos (turmas, salas, professores,
+  Ecoville/Neoville via `*`/`**`, EaD).
 - **Grafo de pré-requisitos** + motor que gera as **5 melhores grades** por semestre,
   sem conflito de horário, respeitando campus/turno/bloqueios (busca com prazo de 2 s).
   A priorização favorece obrigatórias faltantes/atrasadas e, como critério secundário,
