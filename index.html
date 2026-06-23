@@ -2447,9 +2447,12 @@
       }
 
       /* Prioridade (3.4.1) */
-      function prioridade(ctx, cand, cursadas, faltantesObrig) {
+      // periodoRef = período "nominal" do semestre sendo planejado (período atual + nº de semestres à frente).
+      // Matérias atrasadas/do período atual têm prioridade; obrigatórias de período muito futuro (ex.: TCC) decaem.
+      function prioridade(ctx, cand, cursadas, faltantesObrig, periodoRef, conjFeitos) {
         const { grafo, pref } = ctx;
         if (!ctx._descMemo) ctx._descMemo = descendentesTransitivos(grafo);
+        const P = periodoRef || 8;
         return cand.map(c => {
           const d = c.disciplina;
           const fanout = getDesbloqueaveis(grafo, d.codigo, cursadas).length;     // destrava agora (1 nível)
@@ -2459,8 +2462,15 @@
           const isFaltObrig = obrig && faltantesObrig.has(d.codigo);
           const trilhaRank = (d.subAreaTrilha && pref.preferenciaTrilhas.indexOf(d.subAreaTrilha) >= 0)
             ? (pref.preferenciaTrilhas.length - pref.preferenciaTrilhas.indexOf(d.subAreaTrilha)) : 0;
-          const atraso = obrig ? (50 - d.periodoSugerido) : 0;
-          const key = (isFaltObrig ? 100000 : 0) + (obrig ? 10000 : 0) + atraso * 100 + alcance * 8 + fanout * 30 + trilhaRank * 5;
+          // atraso em períodos: >0 atrasada (período passado), 0 = período atual, <0 = futura.
+          // Vale para TODAS as matérias (inclui optativas: 2º estrato/humanidades = 3º, trilhas = 4º).
+          const atrasoP = P - (d.periodoSugerido || 8);
+          const base = atrasoP >= 0
+            ? 30000 + Math.min(atrasoP, 6) * 2500        // atrasada/atual: quanto mais velha, mais urgente
+            : Math.max(0, 22000 + atrasoP * 5000);       // futura: decai forte a cada período à frente
+          let key = base + (obrig ? 4000 : 0) + alcance * 8 + fanout * 30 + trilhaRank * 5;
+          // conjunto optativo já satisfeito (2º estrato/humanidades/trilhas): para de empilhar essas optativas
+          if (conjFeitos && d.isOpcional && conjFeitos[d.conjuntoOptativo]) key -= 40000;
           return Object.assign({}, c, { fanout, alcance, obrig, isFaltObrig, trilhaRank, _key: key });
         }).sort((a, b) => b._key - a._key);
       }
@@ -2830,7 +2840,14 @@
         const curIdx = new Set(cursadas);
         const cand = K.candidatasSemestre(D.ctx, curIdx, new Set(), true);
         const faltObrig = new Set(D.matriz.disciplinas.filter(d => !d.isOpcional && !curIdx.has(d.codigo)).map(d => d.codigo));
-        const ord = K.prioridade(D.ctx, cand, curIdx, faltObrig);
+        const periodoRef = (D.hist.aluno.periodoAtual || 1) + idx;   // período nominal deste semestre projetado
+        const hAgora = calcHorasIdx(curIdx, idx);                    // conjuntos optativos já satisfeitos?
+        const conjFeitos = {
+          '1159': hAgora.conj1159.faltante === 0,
+          '1161': hAgora.conj1161.faltante === 0,
+          '1160': hAgora.trilhas.faltante === 0 && hAgora.trilhas.validadas >= K.REQUISITOS.trilhasNecessarias,
+        };
+        const ord = K.prioridade(D.ctx, cand, curIdx, faltObrig, periodoRef, conjFeitos);
         const manuais = manualBlocos(idx);
         const w = trabDoSem(idx);
         const ger = K.gerarGrades(D.ctx, ord, S.preferencias, manuais, true, Date.now() + 700, w);
