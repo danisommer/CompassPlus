@@ -137,10 +137,15 @@ function alocarTrab(w, infoPorDia) {
     let conflitosNucleo = 0; dias.forEach(d => { if (!infoPorDia[d].coreLivre && J.coreH > 0) conflitosNucleo++; });
     if (!dias.length || alvoSem <= 0) return { horasPorDia, deficit: 0, rigidConf: 0, conflitosNucleo };
 
-    if (!w.flexivel) {                                        // sem flexibilidade: meta igual por dia
-        const alvo = alvoSem / dias.length; let deficit = 0;
-        dias.forEach(d => { horasPorDia[d] = Math.min(alvo, capH(d)); deficit += Math.max(0, alvo - capH(d)); });
-        return { horasPorDia, deficit, rigidConf: 0, conflitosNucleo };
+    if (!w.flexivel) {                                        // sem flexibilidade: meta igual por dia (COMANDO MÁXIMO)
+        const alvo = alvoSem / dias.length; let deficit = 0, rigidConf = 0;
+        dias.forEach(d => {
+            const cap = capH(d);
+            horasPorDia[d] = Math.min(alvo, cap);
+            const falta = alvo - cap;
+            if (falta > 1e-6) { deficit += falta; rigidConf++; }  // qualquer dia que não comporta a meta é conflito rígido
+        });
+        return { horasPorDia, deficit, rigidConf, conflitosNucleo };
     }
 
     // dias flexíveis (determinístico: preferidos primeiro, depois Seg→Sex)
@@ -680,6 +685,21 @@ function gerarGrades(ctx, candOrdenadas, pref, bloqueios, usarGNH, deadline, tra
             let chosen = null;
             for (const t of c.turmas) {
                 if (usarGNH && t.horarios.length && conflita(t.horarios, ocup)) continue;
+                if (trab && !trab.flexivel && t.horarios.length) {
+                    // RESTRIÇÃO MÁXIMA: horário inflexível é COMANDO, não sugestão.
+                    // Nenhuma aula pode sobrepor a janela de trabalho [inicio, fim] em qualquer dia,
+                    // incluindo a folga (deslocamento) configurada.
+                    const wIni = hhmmMin(trab.inicio), wFim = hhmmMin(trab.fim);
+                    const gap = Math.max(0, +trab.folga || 0);
+                    const violaRestr = t.horarios.some(h => {
+                        const sm = SLOT_MIN[h.periodo + h.slot];
+                        if (!sm) return false;
+                        // sobreposição com folga: slot + gap ultrapassa o início do trabalho,
+                        // ou slot começa antes do fim + folga do trabalho.
+                        return (sm.fim + gap) > wIni && (sm.ini - gap) < wFim;
+                    });
+                    if (violaRestr) continue;
+                }
                 const blk = bloqueado(t.horarios, bloqueios);
                 if (!chosen || (chosen.bloqueado && !blk)) chosen = { ...c, turma: t, bloqueado: blk, horarios: t.horarios };
                 if (!blk) break;
