@@ -274,8 +274,8 @@ function blocosSemestreHTML(sem) {
     // o que muda com varHorario é o rótulo e o comportamento: fixo trava a grade, flexível se molda.
     const campoHoras = `<label>Horas/semana (total) <input type="number" min="0" max="60" value="${w.horas}" data-trab="horas" data-sem="${idx}"></label>`;
     const campoJanela = w.varHorario
-        ? `<label>Trabalhar entre <input type="time" value="${w.inicio}" data-trab="comeco" data-sem="${idx}"> e <input type="time" value="${w.fim}" data-trab="termino" data-sem="${idx}"> <span class="muted">— o trabalho se encaixa ao redor das aulas dentro dessa janela</span></label>`
-        : `<label>Trabalhar das <input type="time" value="${w.inicio}" data-trab="comeco" data-sem="${idx}"> às <input type="time" value="${w.fim}" data-trab="termino" data-sem="${idx}"> <span class="muted">— janela fixa todos os dias; nenhuma aula pode ocupá-la</span></label>`;
+        ? `<label>Trabalhar entre <input type="time" value="${w.inicio}" data-trab="comeco" data-sem="${idx}"> e <input type="time" value="${w.fim}" data-trab="termino" data-sem="${idx}"> <span class="muted">— faixa-limite: o trabalho se encaixa ao redor das aulas (a faixa pode ser maior que o total diário)</span></label>`
+        : `<label>Trabalhar das <input type="time" value="${w.inicio}" data-trab="comeco" data-sem="${idx}"> às <input type="time" value="${w.fim}" data-trab="termino" data-sem="${idx}"> <span class="muted">— janela fixa todos os dias (= total diário); nenhuma aula pode ocupá-la</span></label>`;
     const camposTrab = `${campoHoras}
     ${campoJanela}
     ${folgaLabel}`;
@@ -1236,20 +1236,21 @@ function onChange(e) {
         const cur = trabRascunhoOuSalvo(i);
         const toHHMM = m => { m = Math.max(0, Math.min(1439, Math.round(m))); return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; };
         const updates: any = {};
-        // horas/semana predefine a janela: largura diária = horas/semana ÷ 5 dias.
-        // Mexer numa ponta recalcula a outra mantendo essa largura.
+        // Acoplamento horas ↔ janela SÓ no horário fixo ("Trabalhar das X às Y"): aí a janela É o trabalho,
+        // então a largura diária = horas/semana ÷ 5 e mexer numa ponta recalcula a outra.
+        // No flexível ("Trabalhar entre"), a faixa é só um limite (pode conter mais horas que o total
+        // diário), então início e fim são independentes.
+        const acopla = !cur.varHorario;
         if (k === 'horas') {
-            const horas = +tr.value || 0; const dur = horas / 5 * 60;
+            const horas = +tr.value || 0;
             updates.horas = horas;
-            updates.fim = updates.minFim = updates.desejFim = toHHMM(K.hhmmMin(cur.inicio) + dur);
+            if (acopla) updates.fim = updates.minFim = updates.desejFim = toHHMM(K.hhmmMin(cur.inicio) + horas / 5 * 60);
         } else if (k === 'comeco') {
-            const dur = (+cur.horas || 0) / 5 * 60; const ini = K.hhmmMin(tr.value);
             updates.inicio = updates.maxComeco = updates.desejInicio = tr.value;
-            updates.fim = updates.minFim = updates.desejFim = toHHMM(ini + dur);
+            if (acopla) updates.fim = updates.minFim = updates.desejFim = toHHMM(K.hhmmMin(tr.value) + (+cur.horas || 0) / 5 * 60);
         } else if (k === 'termino') {
-            const dur = (+cur.horas || 0) / 5 * 60; const fim = K.hhmmMin(tr.value);
             updates.fim = updates.minFim = updates.desejFim = tr.value;
-            updates.inicio = updates.maxComeco = updates.desejInicio = toHHMM(fim - dur);
+            if (acopla) updates.inicio = updates.maxComeco = updates.desejInicio = toHHMM(K.hhmmMin(tr.value) - (+cur.horas || 0) / 5 * 60);
         } else {
             const numericos = { diasVariaveis: 1, folga: 1 };
             updates[k] = numericos[k] ? (+tr.value || 0) : tr.value;
