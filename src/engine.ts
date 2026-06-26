@@ -23,9 +23,10 @@ function slotTexto(p, s) { const a = SLOTS[p] && SLOTS[p][s]; return a ? `${a[0]
     Janela: começar entre [inicio, maxComeco] e terminar entre [minFim, fim];
     núcleo obrigatório = [maxComeco, minFim] (sempre trabalhado).
     O bloco diário é ANCORADO no horário preferido [desejInicio, desejFim] e só muda
-    quando precisa: dias FIXOS ficam no preferido; quando uma aula corta um dia, os
-    dias FLEXÍVEIS (N, preferidos) compensam — estendem além do preferido só o
-    necessário para manter o total semanal w.horas. */
+    quando precisa. Com horas variáveis, a carga busca HOMOGENEIDADE (total semanal ÷ nº de
+    dias, igual em todos os dias) e só desvia quando a capacidade de um dia (cortada por
+    aulas) não comporta a média — a sobra é redistribuída aos dias com folga (water-filling),
+    mantendo TODO dia com trabalho. */
 const DIAS_UTEIS = [2, 3, 4, 5, 6];
 const SLOT_MIN = {};                                       // 'M1' -> {ini,fim} em minutos
 for (const [p, s] of ORDEM_SLOTS) { const a = SLOTS[p][s]; SLOT_MIN[p + s] = { ini: hhmmMin(a[0]), fim: hhmmMin(a[1]) }; }
@@ -147,7 +148,8 @@ function placeBloco(w, J, durMin, info) {
     return { startMin: start, endMin: end, horas: Math.max(0, (end - start) / 60) };
 }
 
-// distribui o total semanal honrando o horário preferido; só os dias flexíveis variam, e só o necessário
+// distribui o total semanal buscando HOMOGENEIDADE (alvoSem/nDias por dia); só desvia quando a
+// capacidade de um dia força, redistribuindo a sobra aos dias com folga (water-filling)
 function alocarTrab(w, infoPorDia) {
     w = normTrab(w); const J = janelaTrab(w);
     const alvoSem = Math.max(0, +w.horas || 0);
@@ -168,22 +170,25 @@ function alocarTrab(w, infoPorDia) {
         return { horasPorDia, deficit, rigidConf, conflitosNucleo };
     }
 
-    // Horas variáveis: TODOS os dias podem variar.
-    // Cada dia começa no máximo que cabe livre (recortado pelas aulas) e depois ajusta p/ fechar o total.
-    const piso = d => Math.min(J.coreH, capH(d));               // mínimo do dia (núcleo)
-    let rigidConf = 0;
-    const flexDias = dias.slice();
-    flexDias.forEach(d => { horasPorDia[d] = Math.max(piso(d), Math.min(infoPorDia[d].prefFitH, capH(d))); });
-
-    let delta = alvoSem - dias.reduce((a, d) => a + horasPorDia[d], 0);
-    if (delta > 1e-6) {                                         // faltam horas: estender dias flexíveis além do preferido
-        let g = 0; while (delta > 1e-6 && g++ < 800) { flexDias.sort((a, b) => (capH(b) - horasPorDia[b]) - (capH(a) - horasPorDia[a])); const d = flexDias[0]; if (d == null) break; const folga = capH(d) - horasPorDia[d]; if (folga <= 1e-6) break; const add = Math.min(folga, delta); horasPorDia[d] += add; delta -= add; }
-    } else if (delta < -1e-6) {                                 // sobram horas: reduzir dias flexíveis (depois fixos), até o núcleo
-        const reduzir = (grupo) => { let g = 0; while (delta < -1e-6 && g++ < 800) { grupo.sort((a, b) => (horasPorDia[b] - piso(b)) - (horasPorDia[a] - piso(a))); const d = grupo[0]; if (d == null) break; const red = Math.min(horasPorDia[d] - piso(d), -delta); if (red <= 1e-6) break; horasPorDia[d] -= red; delta += red; } };
-        reduzir(flexDias.slice()); if (delta < -1e-6) reduzir(dias.slice());
+    // Horas variáveis: busca HOMOGENEIDADE (alvoSem/nDias por dia) e só aproveita a
+    // flexibilidade quando a média igual não cabe num dia. Water-filling: eleva um nível
+    // uniforme até fechar o total; o dia cuja capacidade (cortada pelas aulas) é menor que o
+    // nível satura na própria capacidade e LIBERA a sobra para os demais — assim a distribuição
+    // fica o mais homogênea possível e TODO dia com capacidade > 0 recebe trabalho.
+    const pendentes = dias.filter(d => capH(d) > 1e-6);
+    let restante = alvoSem, g = 0;
+    while (pendentes.length && restante > 1e-6 && g++ < 100) {
+        const nivel = restante / pendentes.length;
+        pendentes.sort((a, b) => capH(a) - capH(b));
+        const menor = pendentes[0];
+        if (capH(menor) <= nivel + 1e-9) {              // não comporta a média: satura e libera a sobra
+            horasPorDia[menor] = capH(menor); restante -= capH(menor); pendentes.shift();
+        } else {                                        // todos os pendentes comportam o nível: reparte igual
+            pendentes.forEach(d => horasPorDia[d] = nivel); restante = 0;
+        }
     }
     const total = dias.reduce((a, d) => a + horasPorDia[d], 0);
-    return { horasPorDia, deficit: Math.max(0, alvoSem - total), rigidConf, conflitosNucleo };
+    return { horasPorDia, deficit: Math.max(0, alvoSem - total), rigidConf: 0, conflitosNucleo };
 }
 
 // ocupação de aulas por dia útil, a partir de uma seleção (sel[].horarios)
